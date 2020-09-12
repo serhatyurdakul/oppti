@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.card.MaterialCardView
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/space_5"
+            app:strokeColor="@color/colorPrimary"
+            app:strokeWidth="1dp">
+
+        <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginStart="@dimen/space_5"
+                android:layout_marginEnd="80dp"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="@dimen/todo_date"
+                tools:text="12 Sep 2020" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/space_10">
+
+            <ImageView
+                    android:id="@+id/btn_todo_complete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/description_ic_mark_as_complete"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_check" />
+
+            <TextView
+                    android:id="@+id/tv_todo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_5"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/todo_title"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_edit"
+                    app:layout_constraintStart_toEndOf="@+id/btn_todo_complete"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Start working in the new task " />
+
+            <ImageView
+                    android:id="@+id/btn_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/description_ic_edit"
+                    android:paddingStart="@dimen/space_5"
+                    android:paddingEnd="@dimen/space_5"
+                    android:tint="@color/colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_delete"
+                    app:layout_constraintStart_toEndOf="@+id/tv_todo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_edit" />
+
+            <ImageView
+                    android:id="@+id/btn_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/description_ic_delete"
+                    android:paddingStart="@dimen/space_5"
+                    android:paddingEnd="@dimen/no_space"
+                    android:tint="@android:color/holo_red_light"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/btn_edit"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_delete" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

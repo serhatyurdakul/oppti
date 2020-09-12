@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">Oppti</string>
+
+    <string name="label_details">Detaylar</string>
+    <string name="label_add_todo">Gorev ekle</string>
+    <string name="label_add_category">Kategori ekle</string>
+    <string name="label_edit_category">Duzenle</string>
+    <string name="label_switch_account">Kullanici Degistir</string>
+    <string name="label_cancel">Cikis</string>
+    <string name="label_no_todo_list_found">Gorev bulunamadi</string>
+    <string name="label_clear_completed_task">Tamamlananlari sil</string>
+    <string name="label_edit_todo">Duzenle</string>
+    <string name="label_update_todo">Guncelle</string>
+    <string name="label_add">Ekle</string>
+    <string name="label_delete">Sil</string>
+    <string name="label_clear_completed">Tamamlananlari Sil</string>
+    <string name="label_mark_all_as_complete">Tumunu tamamlandi olarak isaretle</string>
+    <string name="label_show_catories">Kategorileri goster/gizle</string>
+
+    <string name="hint_todo">Gorev</string>
+    <string name="hint_category">Kategori</string>
+    <string name="hint_color">Renk</string>
+    <string name="hint_date">Tarih</string>
+
+    <string name="text_are_you_sure">Emin misin?</string>
+
+    <string name="no_internet_connection_exception">Internet baglantisi yok!</string>
+    <string name="sign_in_required_exception">Lutfen devam etmek icin giris yapin!</string>
+    <string name="unknown_exception">Opps! Bazi seyler ters gitti!</string>
+    <string name="no_incomplete_task_found_exception">Guncellemek icin tamamlanmamis goreviniz yok!</string>
+    <string name="no_completed_task_found_exception">Silmek icin tamamlanmis goreviniz yok!</string>
+
+    <string name="switch_account_warning">
+        Oturumunuzu kapattiniz. Endiselenmeyin her zaman geri donebilirsiniz.
+    </string>
+    <string name="complete_all_tasks_warning">Tum gorevler tamamlandi olarak isaretlenecek!</string>
+    <string name="clear_completed_tasks_warning">Tamamlanan tum gorevler silinecek</string>
+    <string name="todo_delete_warning">Uyari: gorev kalici olarak silinecek!</string>
+
+    <string name="description_ic_no_data" translatable="false">No data</string>
+    <string name="description_img_profile" translatable="false">Profile Image</string>
+    <string name="description_ic_edit" translatable="false">Edit Icon</string>
+    <string name="description_ic_delete" translatable="false">Delete Icon</string>
+    <string name="description_ic_mark_as_complete" translatable="false">icon mark as complete</string>
+
+    <string name="add_todo_success_message">Gorev basariyla eklendi!</string>
+    <string name="add_category_success_message">Kategori basariyla eklendi!</string>
+    <string name="update_category_success_message">Kategori basariyla guncellendi!</string>
+    <string name="update_todo_success_message">Gorev basariyla guncellendi!</string>
+    <string name="delete_todo_success_message">Gorev basarıyla silinmistir!</string>
+    <string name="delete_category_success_message">Kategori basarıyla silinmistir!</string>
+    <string name="update_incomplete_tasks_success_message">Tum gorevler tamamlandi olarak isaretlendi!</string>
+    <string name="clear_completed_tasks_success_message">Tamamlanan gorevler basariyla silindi!</string>
+    <string name="task_marked_as_completed_success_message">Gorev tamamlandi</string>
+    <string name="task_marked_as_incomplete_success_message">Gorev tamamlanmadi!</string>
+
+</resources>

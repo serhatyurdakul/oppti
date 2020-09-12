@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "587993423582",
+    "firebase_url": "https://opptimobileapp.firebaseio.com",
+    "project_id": "opptimobileapp",
+    "storage_bucket": "opptimobileapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587993423582:android:7ec5043ecc3fc63fcfec4f",
+        "android_client_info": {
+          "package_name": "com.serhatyurdakul.todo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "587993423582-aej76lka1cmm7pp46ai0p408fa4q77h0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.serhatyurdakul.todo",
+            "certificate_hash": "844147c4d34dbdc1b63a01cc91174973268f6fdc"
+          }
+        },
+        {
+          "client_id": "587993423582-7ndtna5g2cpopesmqkm88s9uf5q6rk3b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.serhatyurdakul.todo",
+            "certificate_hash": "d90b69e44c5a68efa45e9747f64479041cfa5fc5"
+          }
+        },
+        {
+          "client_id": "587993423582-f3206lqqop7aode9nnvjvg8qua35csn8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuFkySzRPQBY6313rIiFxODdofdVsei0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "587993423582-f3206lqqop7aode9nnvjvg8qua35csn8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

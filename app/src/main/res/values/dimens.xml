@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="space_default">16dp</dimen>
+    <dimen name="space_10">10dp</dimen>
+    <dimen name="space_5">5dp</dimen>
+    <dimen name="space_3">3dp</dimen>
+    <dimen name="no_space">0dp</dimen>
+
+    <dimen name="avatar_width_32">36dp</dimen>
+    <dimen name="avatar_height_32">36dp</dimen>
+    <dimen name="avatar_width_48">48dp</dimen>
+    <dimen name="avatar_height_48">48dp</dimen>
+    <dimen name="avatar_width_64">64dp</dimen>
+    <dimen name="avatar_height_64">64dp</dimen>
+
+    <dimen name="category_title">22sp</dimen>
+    <dimen name="todo_title">16sp</dimen>
+    <dimen name="todo_date">12sp</dimen>
+    <dimen name="todo_type">12sp</dimen>
+
+    <dimen name="txt_36">36sp</dimen>
+    <dimen name="txt_32">32sp</dimen>
+    <dimen name="txt_28">28sp</dimen>
+    <dimen name="txt_18">18sp</dimen>
+    <dimen name="txt_16">16sp</dimen>
+    <dimen name="txt_14">14sp</dimen>
+    <dimen name="txt_12">12sp</dimen>
+</resources>

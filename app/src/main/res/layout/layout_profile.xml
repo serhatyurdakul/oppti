@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/space_default"
+            android:paddingTop="@dimen/space_default"
+            android:paddingEnd="@dimen/space_5"
+            android:paddingBottom="@dimen/space_default"
+            android:visibility="gone"
+            tools:background="@drawable/appbar_bg_gradient"
+            tools:visibility="visible">
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+                android:id="@+id/img_profile"
+                android:layout_width="@dimen/avatar_width_48"
+                android:layout_height="@dimen/avatar_width_48"
+                app:civ_border_color="@android:color/white"
+                app:civ_border_width="2dp"
+                app:layout_constraintBottom_toTopOf="@+id/tv_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:src="@drawable/ic_avatar" />
+
+        <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_default"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_18"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tv_status"
+                app:layout_constraintEnd_toStartOf="@+id/tv_dd"
+                app:layout_constraintStart_toEndOf="@+id/img_profile"
+                app:layout_constraintTop_toTopOf="@+id/img_profile"
+                tools:text="Arhan Ashik" />
+
+        <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_default"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_12"
+                app:layout_constraintBottom_toBottomOf="@+id/img_profile"
+                app:layout_constraintEnd_toStartOf="@+id/tv_dd"
+                app:layout_constraintStart_toEndOf="@+id/img_profile"
+                app:layout_constraintTop_toBottomOf="@+id/tv_name"
+                tools:text="@string/label_no_todo_list_found" />
+
+        <TextView
+                android:id="@+id/tv_dd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/space_3"
+                android:singleLine="true"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_14"
+                app:layout_constraintBottom_toTopOf="@+id/tv_day"
+                app:layout_constraintEnd_toStartOf="@+id/tv_MMM"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="@+id/tv_day"
+                app:layout_constraintTop_toTopOf="@+id/img_profile"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="12" />
+
+        <TextView
+                android:id="@+id/tv_MMM"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_3"
+                android:singleLine="true"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_14"
+                app:layout_constraintEnd_toEndOf="@+id/tv_day"
+                app:layout_constraintStart_toEndOf="@+id/tv_dd"
+                app:layout_constraintTop_toTopOf="@+id/tv_dd"
+                tools:text="JAN" />
+
+        <TextView
+                android:id="@+id/tv_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/space_default"
+                android:singleLine="true"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/txt_14"
+                app:layout_constraintBottom_toBottomOf="@+id/img_profile"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_dd"
+                tools:text="Tuesday" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

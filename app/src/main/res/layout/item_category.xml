@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.card.MaterialCardView
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="@dimen/space_5"
+
+            app:strokeWidth="1dp">
+
+        <TextView
+                android:id="@+id/tv_category"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/space_10"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/category_title"
+                tools:text="Start working in the new task " />
+
+        <ImageView
+                android:id="@+id/btn_delete"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right|center_vertical"
+                android:contentDescription="@string/description_ic_delete"
+                android:paddingStart="@dimen/space_5"
+                android:paddingEnd="@dimen/space_10"
+                android:tint="@android:color/holo_red_light"
+                app:srcCompat="@drawable/ic_delete" />
+    </com.google.android.material.card.MaterialCardView>
+</layout>
