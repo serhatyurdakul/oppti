@@ -1,17 +1,21 @@
 package com.serhatyurdakul.todo.app.ui.main
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
 import android.text.SpannableStringBuilder
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -20,6 +24,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.kizitonwose.calendarview.CalendarView
+import com.kizitonwose.calendarview.model.CalendarDay
+import com.kizitonwose.calendarview.model.CalendarMonth
+import com.kizitonwose.calendarview.ui.DayBinder
+import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.serhatyurdakul.todo.R
 import com.serhatyurdakul.todo.app.data.local.Const
 import com.serhatyurdakul.todo.app.data.local.category.CategoryEntity
@@ -30,6 +39,8 @@ import com.serhatyurdakul.todo.app.ui.helper.Validator
 import com.serhatyurdakul.todo.app.ui.main.adapter.TodoAdapter
 import com.serhatyurdakul.todo.app.ui.main.callback.CategoryClickEvent
 import com.serhatyurdakul.todo.app.ui.main.callback.TodoClickEvent
+import com.serhatyurdakul.todo.app.ui.main.holder.DayViewContainer
+import com.serhatyurdakul.todo.app.ui.main.holder.MonthViewContainer
 import com.serhatyurdakul.todo.databinding.PromptCategoryBinding
 import com.serhatyurdakul.todo.databinding.PromptTodoBinding
 import com.serhatyurdakul.todo.util.helper.*
@@ -38,6 +49,10 @@ import com.serhatyurdakul.todo.util.lib.firebase.callback.*
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_profile.view.*
+import java.time.YearMonth
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.time.temporal.WeekFields
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -55,10 +70,12 @@ class MainActivity : AppCompatActivity(), AuthHelper {
     private var completeAllMenu: MenuItem? = null
     private var clearCompletedMenu: MenuItem? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
 
         initView()
 
@@ -75,6 +92,8 @@ class MainActivity : AppCompatActivity(), AuthHelper {
     }
 
     private fun initView() {
+        //init calendar view
+        setUpCalendarView();
         // init recycler view
         adapter.setListeners(object : TodoClickEvent {
             override fun onClickTodo(todo: TodoEntity, action: String, position: Int) {
@@ -118,6 +137,8 @@ class MainActivity : AppCompatActivity(), AuthHelper {
         btn_add_todo.setOnClickListener { addTodo() }
         btn_add_category.setOnClickListener { addCategory() }
         swipe_refresh.setOnRefreshListener { loadTodoList() }
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -280,9 +301,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
                         swipe_refresh.isRefreshing = false
                         if (error == null) {
                             Toaster(this@MainActivity).showToast(getString(R.string.add_category_success_message))
-//                            img_no_data.visibility = View.INVISIBLE
-//                            rv_todo_list.visibility = View.VISIBLE
-//                            adapter.addTodo(todo!!)
+
                         } else {
                             Toaster(this@MainActivity).showToast(error)
                         }
@@ -304,7 +323,8 @@ class MainActivity : AppCompatActivity(), AuthHelper {
     }
 
     // add new todoItem with custom alert dialog
-    private fun addTodo() {
+    private fun addTodo( date:Date = Date()) {
+        val dateNow = FormatUtil().formatDate(date, FormatUtil.dd_MMM_yyyy)
         if (currentUserEntity == null) {
             signIn(this); return
         }
@@ -336,7 +356,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
                 imm.hideSoftInputFromWindow(it.windowToken, 0)
 
             }
-            val dateNow = FormatUtil().formatDate(Date(), FormatUtil.dd_MMM_yyyy)
+
             binding.tietTodoDate.text = SpannableStringBuilder(dateNow)
 
             val myCalendar = Calendar.getInstance()
@@ -375,9 +395,8 @@ class MainActivity : AppCompatActivity(), AuthHelper {
                             swipe_refresh.isRefreshing = false
                             if (error == null) {
                                 Toaster(this@MainActivity).showToast(getString(R.string.add_todo_success_message))
-//                            img_no_data.visibility = View.INVISIBLE
-//                            rv_todo_list.visibility = View.VISIBLE
-//                            adapter.addTodo(todo!!)
+
+
                             } else {
                                 Toaster(this@MainActivity).showToast(error)
                             }
@@ -523,9 +542,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
                         swipe_refresh.isRefreshing = false
                         if (error == null) {
                             Toaster(this@MainActivity).showToast(getString(R.string.update_category_success_message))
-//                            img_no_data.visibility = View.INVISIBLE
-//                            rv_todo_list.visibility = View.VISIBLE
-//                            adapter.addTodo(todo!!)
+
                         } else {
                             Toaster(this@MainActivity).showToast(error)
                         }
@@ -739,8 +756,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
                     } else {
                         adapter.setCategoryList(categoryList)
                         updateStatus()
-                        //  img_no_data.visibility = View.VISIBLE
-                        //  rv_todo_list.visibility = View.INVISIBLE
+
                     }
                 }
             }
@@ -799,5 +815,68 @@ class MainActivity : AppCompatActivity(), AuthHelper {
     override fun onDestroy() {
         remote.removeTodoListListener()
         super.onDestroy()
+    }
+
+    fun setUpCalendarView()
+    {
+
+        calendarView.dayBinder = object : DayBinder<DayViewContainer> {
+            // Called only when a new container is needed.
+            override fun create(view: View) = DayViewContainer(view)
+
+            // Called every time we need to reuse a container.
+            override fun bind(container: DayViewContainer, day: CalendarDay) {
+                container.textView.text = day.date.dayOfMonth.toString()
+                container.view.isClickable=true
+                container.view.setOnClickListener {
+                    var defaultZoneId = ZoneId.systemDefault();
+                    addTodo(  Date.from(day.date.atStartOfDay(defaultZoneId).toInstant()))
+                }
+            }
+        }
+
+        val currentMonth = YearMonth.now()
+        val firstMonth = currentMonth.minusMonths(10)
+        val lastMonth = currentMonth.plusMonths(10)
+        val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
+
+        calendarView.monthHeaderBinder= object : MonthHeaderFooterBinder<MonthViewContainer> {
+            override fun create(view: View) = MonthViewContainer(view)
+            override fun bind(container: MonthViewContainer, month: CalendarMonth) {
+                // Setup each header day text if we have not done that already.
+                val daysOfWeek = daysOfWeekFromLocale()
+                if (container.legendLayout.tag == null) {
+                    container.legendLayout.tag = month.yearMonth
+                    for (c in 0..6)
+                    {
+                        var tv = container.legendLayout.getChildAt(c) as TextView;
+                        tv.text = daysOfWeek[c].getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+                            .toUpperCase(Locale.ENGLISH)
+                        ///tv.setTextColorRes(R.color.example_5_text_grey)
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+
+                    }
+
+                    month.yearMonth
+                }
+            }
+        }
+
+        calendarView.setup(firstMonth, lastMonth, firstDayOfWeek)
+
+        calendarView.scrollToMonth(firstMonth)
+        scrollToCurrentMonth(currentMonth,this)
+
+
+
+    }
+    fun scrollToCurrentMonth(currentMonth:YearMonth, activity: Activity) {
+        Handler().postDelayed({
+            activity.runOnUiThread {
+                Runnable {
+                    calendarView.scrollToMonth(currentMonth)
+                }
+            }
+        }, 10000)
     }
 }
