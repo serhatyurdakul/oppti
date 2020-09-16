@@ -53,5 +53,7 @@
     <string name="clear_completed_tasks_success_message">Tamamlanan gorevler basariyla silindi!</string>
     <string name="task_marked_as_completed_success_message">Gorev tamamlandi</string>
     <string name="task_marked_as_incomplete_success_message">Gorev tamamlanmadi!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

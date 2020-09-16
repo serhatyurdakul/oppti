@@ -18,4 +18,22 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="tabLayoutTextAppearence" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:fontFamily">@font/gothambold</item>
+        <item name="android:textAllCaps">true</item>
+
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <!-- Gets rid of the search icon -->
+        <item name="searchIcon">@drawable/search_icon</item>
+        <!-- Gets rid of the "underline" in the text -->
+        <item name="queryBackground">@drawable/search_background</item>
+        <!-- Gets rid of the search icon when the SearchView is expanded -->
+        <item name="searchHintIcon">@null</item>
+
+    </style>
+
 </resources>

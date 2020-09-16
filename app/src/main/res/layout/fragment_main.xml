@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".app.ui.main.MainFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/collapsing_toolbar_appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#3A3A5A"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:elevation="0dp">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#3A3A5A"
+                app:layout_scrollFlags="scroll|snap|enterAlways">
+
+            <RelativeLayout
+                    android:id="@+id/arama_rlayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/search_layout_background"
+                    android:visibility="visible">
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                    <com.google.android.material.tabs.TabLayout
+                            android:id="@+id/tabLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/list_search_layout_bg"
+                            app:tabIndicatorColor="#4048EF"
+                            app:tabMode="fixed"
+                            app:tabSelectedTextColor="@color/white"
+                            app:tabTextAppearance="@style/tabLayoutTextAppearence"
+                            app:tabTextColor="#6E7FAA">
+
+                        <com.google.android.material.tabs.TabItem
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Takvim" />
+
+                        <com.google.android.material.tabs.TabItem
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Görevler" />
+                    </com.google.android.material.tabs.TabLayout>
+
+                    <RelativeLayout
+
+                            android:id="@+id/search_box_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="15dp"
+
+                            android:layout_marginRight="10dp"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:scaleType="fitXY"
+                            android:visibility="gone">
+                        <!--
+                                                                              <ImageView
+                                                                                      android:layout_width="21dp"
+                                                                                      android:layout_height="21dp"
+                                                                                      android:layout_marginLeft="10dp"
+                                                                                      android:layout_marginTop="14.5dp"
+                                                                                      android:layout_marginBottom="14.5dp"
+                                                                                      android:scaleType="fitXY"
+                                                                                      android:src="@drawable/search_icon" />
+                                                      -->
+                        <androidx.appcompat.widget.SearchView
+                                android:id="@+id/search_box"
+                                style="@style/SearchViewStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:layout_centerVertical="true"
+                                android:background="@drawable/search_background"
+                                android:fontFamily="@font/gothambold"
+                                android:imeOptions="actionSearch"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:textColor="#6E7FAA"
+                                android:textColorHint="#6E7FAA"
+                                android:textSize="13sp"
+                                app:iconifiedByDefault="false"
+                                app:queryHint=""
+
+                                />
+
+
+                    </RelativeLayout>
+
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                        <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1" />
+
+                        <RelativeLayout
+                                android:id="@+id/order_button"
+                                android:layout_width="78dp"
+                                android:layout_height="25.4dp"
+                                android:layout_gravity="right|center_vertical"
+                                android:layout_marginRight="8dp"
+                                android:background="@drawable/all"
+
+                                android:paddingBottom="2dp">
+
+                            <ImageView
+                                    android:id="@+id/order_icon"
+                                    android:layout_width="14dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="10dp"
+                                    android:paddingBottom="2dp"
+                                    android:src="@drawable/ic_category" />
+
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="2dp"
+                                    android:layout_toRightOf="@id/order_icon"
+                                    android:fontFamily="@font/gothambold"
+                                    android:gravity="center_vertical"
+                                    android:text="SIRALA"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp" />
+
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                                android:id="@+id/show_all"
+                                android:layout_width="78dp"
+                                android:layout_height="25.4dp"
+                                android:layout_gravity="right|center_vertical"
+                                android:layout_marginRight="10dp"
+                                android:background="@drawable/all"
+                                android:paddingBottom="2dp">
+
+                            <ImageView
+                                    android:id="@+id/show_all_icon"
+                                    android:layout_width="14dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="15dp"
+                                    android:paddingBottom="2dp"
+                                    android:src="@drawable/all_button_icon" />
+
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="2dp"
+                                    android:layout_toRightOf="@id/show_all_icon"
+                                    android:fontFamily="@font/gothambold"
+                                    android:gravity="center_vertical"
+                                    android:text="Hepsi"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                                android:id="@+id/show_all_selected"
+                                android:layout_width="78dp"
+                                android:layout_height="25.4dp"
+
+                                android:layout_gravity="right|center_vertical"
+                                android:layout_marginRight="10dp"
+                                android:background="@drawable/all_selected"
+                                android:paddingBottom="2dp"
+                                android:visibility="gone">
+
+                            <ImageView
+                                    android:id="@+id/show_all_selected_icon"
+                                    android:layout_width="14dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="15dp"
+                                    android:paddingBottom="2dp"
+                                    android:src="@drawable/all_button_icon" />
+
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="2dp"
+                                    android:layout_toRightOf="@id/show_all_selected_icon"
+                                    android:fontFamily="@font/gothambold"
+                                    android:gravity="center_vertical"
+                                    android:text="Hepsi"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
+
+            >
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/view_pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#1E1E32"
+                    android:layout_above="@id/footer_container"
+                    android:visibility="visible"/>
+
+            <RelativeLayout
+                    android:id="@+id/footer_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="#000"
+
+                    />
+
+        </RelativeLayout>
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

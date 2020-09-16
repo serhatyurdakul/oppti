@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.serhatyurdakul.todo.R
 import com.serhatyurdakul.todo.app.data.local.Const
+import com.serhatyurdakul.todo.app.ui.main.MainActivity
 import java.util.*
 
 /*
@@ -21,19 +22,22 @@ interface AuthHelper {
     }
 
     // config and start firebase auth UI
-    fun signIn(activity: Activity) {
-        val providers = Arrays.asList(
-            AuthUI.IdpConfig.GoogleBuilder().build(),
-            AuthUI.IdpConfig.EmailBuilder().build()
-        )
+    fun signIn(activity: MainActivity) {
+        if(!activity.isSignInPageVisible) {
+            activity.isSignInPageVisible = true
+            val providers = Arrays.asList(
+                AuthUI.IdpConfig.GoogleBuilder().build(),
+                AuthUI.IdpConfig.EmailBuilder().build()
+            )
 
-        activity.startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .setLogo(R.drawable.ic_logo)
-                .build(),
-            Const.RequestCode.AUTH
-        )
+            activity.startActivityForResult(
+                AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(providers)
+                    .setLogo(R.drawable.ic_logo)
+                    .build(),
+                Const.RequestCode.AUTH
+            )
+        }
     }
 }
