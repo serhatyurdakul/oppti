@@ -51,6 +51,47 @@ class MainFragment : Fragment() {
         tabLayout.setupWithViewPager(view_pager)
         setTabs()
         view_pager.setCurrentItem(0,false)
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener
+        {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+               if (tab.position==0)
+               {
+                   collapsing_toolbar_appBarLayout.setExpanded(true,true)
+                   (activity as MainActivity).runOnUiThread {
+                       (activity as MainActivity).appBarLayout?.setExpanded(true,true)
+                   }
+                   actions_layout.visibility=View.GONE
+               }else
+               {
+                   (activity as MainActivity).runOnUiThread {
+                       (activity as MainActivity).appBarLayout?.setExpanded(false,true)
+                   }
+                   actions_layout.visibility=View.VISIBLE
+               }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+
+            }
+
+        }
+        )
+
+        action_clear_completed_task.setOnClickListener {
+            pagerAdapter.taskFragment?.clearCompletedTasks()
+
+        }
+        action_complete_all_task.setOnClickListener {
+            pagerAdapter.taskFragment?.completeAllTasks()
+        }
+        action_show_categories.setOnClickListener {
+            pagerAdapter.taskFragment?.adapter?.showCategories()
+
+        }
     }
 
     fun setTabs()

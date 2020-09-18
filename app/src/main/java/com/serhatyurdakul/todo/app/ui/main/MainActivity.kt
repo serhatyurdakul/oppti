@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.android.material.appbar.AppBarLayout
 import com.serhatyurdakul.todo.R
 import com.serhatyurdakul.todo.app.data.local.Const
 import com.serhatyurdakul.todo.app.data.local.user.UserEntity
@@ -36,12 +37,12 @@ class MainActivity : AppCompatActivity(), AuthHelper {
     // menu for clearing all completed tasks at once
     private var completeAllMenu: MenuItem? = null
     private var clearCompletedMenu: MenuItem? = null
-
+    var appBarLayout: AppBarLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        appBarLayout=appbar
 
 
         initView()
@@ -62,7 +63,20 @@ class MainActivity : AppCompatActivity(), AuthHelper {
         //init calendar view
         ///setUpCalendarView();
         // init recycler view
+        container_profile.isClickable=true
+        container_profile.setOnClickListener {
+            if (currentUserEntity == null) signIn(this) else {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.text_are_you_sure)
+                    .setMessage(R.string.switch_account_warning)
+                    .setPositiveButton(R.string.label_switch_account) { _, _ -> switchAccount() }
+                    .setNegativeButton(R.string.label_cancel) { _, _ -> signOutAccount() }
+                    .create()
+                    .show()
+            }
 
+
+        }
 
 
     }
@@ -87,31 +101,9 @@ class MainActivity : AppCompatActivity(), AuthHelper {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
 
-        return super.onCreateOptionsMenu(menu)
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.action_account -> {
-                // switch account
-                if (currentUserEntity == null) signIn(this) else {
-                    AlertDialog.Builder(this)
-                        .setTitle(R.string.text_are_you_sure)
-                        .setMessage(R.string.switch_account_warning)
-                        .setPositiveButton(R.string.label_switch_account) { _, _ -> switchAccount() }
-                        .setNegativeButton(R.string.label_cancel) { _, _ -> signOutAccount() }
-                        .create()
-                        .show()
-                }
-            }
 
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
 
     // create new user based on the firebase auth data
     private fun createUser() {
@@ -185,12 +177,15 @@ class MainActivity : AppCompatActivity(), AuthHelper {
         clearCompletedMenu?.isVisible = currentUserEntity != null
 
         if (currentUserEntity == null) {
-            container_profile.visibility = View.GONE
+            container_profile.visibility = View.VISIBLE
+            container_profile.tv_name.text = "Devam etmek için giriş yapınız."
+            container_profile.visibility = View.VISIBLE
+            container_profile.tv_status.text=""
         } else {
             container_profile.img_profile.load(currentUserEntity!!.image)
             container_profile.tv_name.text = currentUserEntity!!.name
             container_profile.visibility = View.VISIBLE
-        }
+
 
         var status = getString(R.string.label_no_todo_list_found)
 
@@ -199,7 +194,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
         }
 
         container_profile.tv_status.text = status
-
+        }
         val calender = Calendar.getInstance()
         val day = calender.get(Calendar.DAY_OF_MONTH)
 

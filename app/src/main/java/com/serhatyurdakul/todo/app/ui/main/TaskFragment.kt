@@ -51,7 +51,7 @@ class TaskFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var mContext: Context? = null
-    private val adapter = TodoAdapter()
+     val adapter = TodoAdapter()
     private var mainActivity:MainActivity? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -415,7 +415,7 @@ class TaskFragment : Fragment() {
     }
 
     // bulk delete all completed todoItems
-    private fun clearCompletedTasks() {
+     fun clearCompletedTasks() {
         if (mainActivity!!.currentUserEntity == null) {
             mainActivity!!.signIn(mainActivity!!); return
         }
@@ -519,7 +519,7 @@ class TaskFragment : Fragment() {
     }
 
     // bulk update all incomplete todoItems
-    private fun completeAllTasks() {
+     fun completeAllTasks() {
         if (mainActivity!!.currentUserEntity == null) {
             mainActivity!!.signIn(mainActivity!!); return
         }

@@ -31,7 +31,8 @@
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:background="#1e1e32">
 
                     <com.google.android.material.tabs.TabLayout
                             android:id="@+id/tabLayout"
@@ -102,43 +103,43 @@
 
 
                     <LinearLayout
+                            android:id="@+id/actions_layout"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
+                            android:layout_height="40dp"
                             android:orientation="horizontal"
                             android:visibility="gone">
 
                         <View
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:layout_weight="1" />
+                                android:layout_weight="7" />
 
                         <RelativeLayout
-                                android:id="@+id/order_button"
-                                android:layout_width="78dp"
+                                android:id="@+id/action_complete_all_task"
+                                android:layout_width="85dp"
                                 android:layout_height="25.4dp"
                                 android:layout_gravity="right|center_vertical"
                                 android:layout_marginRight="8dp"
                                 android:background="@drawable/all"
-
-                                android:paddingBottom="2dp">
+                                android:clickable="true">
 
                             <ImageView
-                                    android:id="@+id/order_icon"
+                                    android:id="@+id/complete_icon"
                                     android:layout_width="14dp"
                                     android:layout_height="match_parent"
                                     android:layout_centerVertical="true"
                                     android:layout_marginLeft="10dp"
                                     android:paddingBottom="2dp"
-                                    android:src="@drawable/ic_category" />
+                                    android:src="@drawable/ic_done_all_white" />
 
                             <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="match_parent"
                                     android:layout_marginLeft="2dp"
-                                    android:layout_toRightOf="@id/order_icon"
+                                    android:layout_toRightOf="@id/complete_icon"
                                     android:fontFamily="@font/gothambold"
                                     android:gravity="center_vertical"
-                                    android:text="SIRALA"
+                                    android:text="Tamamla"
                                     android:textColor="@color/white"
                                     android:textSize="11sp" />
 
@@ -146,13 +147,46 @@
                         </RelativeLayout>
 
                         <RelativeLayout
-                                android:id="@+id/show_all"
-                                android:layout_width="78dp"
+                                android:id="@+id/action_clear_completed_task"
+                                android:layout_width="85dp"
                                 android:layout_height="25.4dp"
                                 android:layout_gravity="right|center_vertical"
-                                android:layout_marginRight="10dp"
+                                android:layout_marginRight="8dp"
                                 android:background="@drawable/all"
-                                android:paddingBottom="2dp">
+                                android:clickable="true"
+
+                                >
+
+                            <ImageView
+                                    android:id="@+id/clear_icon"
+                                    android:layout_width="14dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginLeft="10dp"
+                                    android:paddingBottom="2dp"
+                                    android:src="@drawable/ic_clear_all" />
+
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="2dp"
+                                    android:layout_toRightOf="@id/clear_icon"
+                                    android:fontFamily="@font/gothambold"
+                                    android:gravity="center_vertical"
+                                    android:text="Temizle"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp" />
+
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                                android:id="@+id/action_show_categories"
+                                android:layout_width="85dp"
+                                android:layout_height="25.4dp"
+                                android:layout_gravity="right|center_vertical"
+                                android:background="@drawable/all"
+                                android:clickable="true">
 
                             <ImageView
                                     android:id="@+id/show_all_icon"
@@ -161,7 +195,7 @@
                                     android:layout_centerVertical="true"
                                     android:layout_marginLeft="15dp"
                                     android:paddingBottom="2dp"
-                                    android:src="@drawable/all_button_icon" />
+                                    android:src="@drawable/ic_category" />
 
                             <TextView
                                     android:layout_width="wrap_content"
@@ -170,43 +204,15 @@
                                     android:layout_toRightOf="@id/show_all_icon"
                                     android:fontFamily="@font/gothambold"
                                     android:gravity="center_vertical"
-                                    android:text="Hepsi"
+                                    android:text="Kategori"
                                     android:textColor="@color/white"
                                     android:textSize="11sp" />
                         </RelativeLayout>
 
-                        <RelativeLayout
-                                android:id="@+id/show_all_selected"
-                                android:layout_width="78dp"
-                                android:layout_height="25.4dp"
-
-                                android:layout_gravity="right|center_vertical"
-                                android:layout_marginRight="10dp"
-                                android:background="@drawable/all_selected"
-                                android:paddingBottom="2dp"
-                                android:visibility="gone">
-
-                            <ImageView
-                                    android:id="@+id/show_all_selected_icon"
-                                    android:layout_width="14dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_centerVertical="true"
-                                    android:layout_marginLeft="15dp"
-                                    android:paddingBottom="2dp"
-                                    android:src="@drawable/all_button_icon" />
-
-                            <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginLeft="2dp"
-                                    android:layout_toRightOf="@id/show_all_selected_icon"
-                                    android:fontFamily="@font/gothambold"
-                                    android:gravity="center_vertical"
-                                    android:text="Hepsi"
-                                    android:textColor="@color/white"
-                                    android:textSize="11sp" />
-                        </RelativeLayout>
-
+                        <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.5" />
                     </LinearLayout>
 
                 </LinearLayout>

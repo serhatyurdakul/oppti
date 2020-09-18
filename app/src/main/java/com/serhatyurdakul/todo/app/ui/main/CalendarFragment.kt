@@ -1,27 +1,40 @@
 package com.serhatyurdakul.todo.app.ui.main
 
 import android.app.Activity
+import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.MonthScrollListener
 import com.serhatyurdakul.todo.R
+import com.serhatyurdakul.todo.app.data.local.todo.TodoEntity
+import com.serhatyurdakul.todo.app.ui.helper.Validator
 import com.serhatyurdakul.todo.app.ui.main.adapter.TodoAdapter
 import com.serhatyurdakul.todo.app.ui.main.holder.DayViewContainer
 import com.serhatyurdakul.todo.app.ui.main.holder.MonthViewContainer
+import com.serhatyurdakul.todo.databinding.PromptTodoBinding
+import com.serhatyurdakul.todo.util.helper.FormatUtil
 import com.serhatyurdakul.todo.util.helper.Toaster
 import com.serhatyurdakul.todo.util.helper.daysOfWeekFromLocale
+import com.serhatyurdakul.todo.util.lib.firebase.callback.TodoCallback
 import kotlinx.android.synthetic.main.fragment_calendar.*
+import kotlinx.android.synthetic.main.fragment_task.*
 import java.time.YearMonth
+import java.time.ZoneId
 import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.*
@@ -107,10 +120,11 @@ class CalendarFragment : Fragment() {
                 container.textView.text = day.date.dayOfMonth.toString()
                 container.view.isClickable=true
                 container.view.setOnClickListener {
-                  //  var defaultZoneId = ZoneId.systemDefault();
-                  //  addTodo(  Date.from(day.date.atStartOfDay(defaultZoneId).toInstant()))
-                    Toaster(mContext!!).showToast("Özellik eklenecek")
+                //    var defaultZoneId = ZoneId.systemDefault();
+                   // addTodo(  Date.from(day.date.atStartOfDay(defaultZoneId).toInstant()))
+                    Toaster(mContext!!).showToast(day.date.toString()+" tıklandı.\nÖzellikler henüz eklenmedi.")
                 }
+
             }
         }
 
@@ -155,8 +169,6 @@ class CalendarFragment : Fragment() {
 
 
     }
-
-
 
 
 

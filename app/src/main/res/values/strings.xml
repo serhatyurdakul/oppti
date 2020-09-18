@@ -31,7 +31,7 @@
     <string name="no_completed_task_found_exception">Silmek icin tamamlanmis goreviniz yok!</string>
 
     <string name="switch_account_warning">
-        Oturumunuzu kapattiniz. Endiselenmeyin her zaman geri donebilirsiniz.
+        Oturumunuzu kapatiyorsunuz. Endiselenmeyin her zaman geri donebilirsiniz.
     </string>
     <string name="complete_all_tasks_warning">Tum gorevler tamamlandi olarak isaretlenecek!</string>
     <string name="clear_completed_tasks_warning">Tamamlanan tum gorevler silinecek</string>
