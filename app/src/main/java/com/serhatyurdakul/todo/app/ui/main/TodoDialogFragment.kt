@@ -171,7 +171,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                         }
                     })
 
-                    mDialog?.dismiss()
+               //     mDialog?.dismiss()
                 }
                 .setNegativeButton(R.string.label_cancel) { _, _ -> }
                 .create()
