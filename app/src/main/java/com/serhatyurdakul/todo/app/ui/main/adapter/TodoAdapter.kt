@@ -116,7 +116,9 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 list.add(CategoryEntity("-1","Diğer","","455A64"))
                 list.addAll(leftOverTodos)
             }
-         //Removed listing empty categories   list.addAll(leftOverCategories)
+         //Removed listing empty categories( if todo items exist)
+            if(list.size==0)
+            list.addAll(leftOverCategories)
 
         }
         notifyDataSetChanged()
