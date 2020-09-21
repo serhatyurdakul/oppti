@@ -76,6 +76,7 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private fun organizeList() {
         var leftOverCategories = ArrayList<CategoryEntity>()
+        var leftOverTodos = ArrayList<TodoEntity>()
 
         list.clear()
         if ((listOfCategories.size == 0 || !categoryVisible))
@@ -95,7 +96,23 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     leftOverCategories.add(category)
                 }
             }
+            for(todo in listOfTodos)
+            {
+                if(list.indexOf(todo)==-1)
+                {
 
+                    leftOverTodos.add(todo)
+
+                }
+
+            }
+
+
+            if(leftOverTodos.size>0)
+            {
+                list.add(CategoryEntity("-1","Diğer","","455A64"))
+                list.addAll(leftOverTodos)
+            }
             list.addAll(leftOverCategories)
 
         }

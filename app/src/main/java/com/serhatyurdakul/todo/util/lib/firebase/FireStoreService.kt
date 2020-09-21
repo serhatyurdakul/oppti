@@ -26,6 +26,13 @@ class FireStoreService : FireStoreMapper {
     //categoryList documents listener
     private var categoryListener: ListenerRegistration? = null
 
+    //todoList documents listener
+    private var todoListenerCalendar: ListenerRegistration? = null
+
+    //categoryList documents listener
+    private var categoryListenerCalendar: ListenerRegistration? = null
+
+
     // create user from firebase auth user
     fun createUser(user: FirebaseUser, callback: CreateUserCallback) {
         val userDb = db.collection(Const.Collection.USER)
@@ -150,6 +157,28 @@ class FireStoreService : FireStoreMapper {
     // unregister the listener
     fun removeCategoryListListener() {
         categoryListener?.remove()
+    }
+
+    // register a listener for getting the live changes of categoryDocuments stored in firestore
+    fun addCategoryListListenerCalendar(user: UserEntity, callback: CategoryListCallback) {
+        val query = db.collection(Const.Collection.CATEGORY)
+            .whereEqualTo(Const.Key.Category.USER, user.id)
+
+        categoryListenerCalendar =
+            query.addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
+                if (e != null) {
+                    Timber.e("Listen failed. %s", e.toString())
+                    callback.onResponse(null, "Failed. Error: ${e.message}")
+                    return@EventListener
+                }
+
+                callback.onResponse(toCategoryEntityList(value!!), null)
+            })
+    }
+
+    // unregister the listener
+    fun removeCategoryListListenerCalendar() {
+        categoryListenerCalendar?.remove()
     }
 
 
@@ -284,4 +313,26 @@ class FireStoreService : FireStoreMapper {
     fun removeTodoListListener() {
         todoListener?.remove()
     }
+
+    // register a listener for getting the live changes of todoDocuments stored in firestore
+    fun addTodoListListenerCalendar(user: UserEntity, callback: TodoListCallback) {
+        val query = db.collection(Const.Collection.TODO)
+            .whereEqualTo(Const.Key.Todo.USER, user.id)
+
+        todoListenerCalendar = query.addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
+            if (e != null) {
+                Timber.e("Listen failed. %s", e.toString())
+                callback.onResponse(null, "Failed. Error: ${e.message}")
+                return@EventListener
+            }
+
+            callback.onResponse(toTodoEntityList(value!!), null)
+        })
+    }
+
+    // unregister the listener
+    fun removeTodoListListenerCalendar() {
+        todoListenerCalendar?.remove()
+    }
+
 }

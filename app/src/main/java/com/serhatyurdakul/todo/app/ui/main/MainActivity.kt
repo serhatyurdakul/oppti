@@ -28,9 +28,9 @@ import java.util.*
 class MainActivity : AppCompatActivity(), AuthHelper {
 
     // firestore serveice class instance
-     val remote: FireStoreService by lazy { FireStoreService() }
+    val remote: FireStoreService by lazy { FireStoreService() }
 
-     var currentUserEntity: UserEntity? = null
+    var currentUserEntity: UserEntity? = null
 
     var isSignInPageVisible = false
 
@@ -38,11 +38,12 @@ class MainActivity : AppCompatActivity(), AuthHelper {
     private var completeAllMenu: MenuItem? = null
     private var clearCompletedMenu: MenuItem? = null
     var appBarLayout: AppBarLayout? = null
-
+    var taskFragment: TaskFragment? = null
+    var calendarFragment: CalendarFragment? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        appBarLayout=appbar
+        appBarLayout = appbar
 
 
         initView()
@@ -54,8 +55,8 @@ class MainActivity : AppCompatActivity(), AuthHelper {
             currentUserEntity = remote.getUserEntity(currentUser()!!)
             updateStatus(0)
             //loadTodoList()
-          ///  addTodoListListener()
-           /// addCategoryListListener()
+            ///  addTodoListListener()
+            /// addCategoryListListener()
         }
     }
 
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
         //init calendar view
         ///setUpCalendarView();
         // init recycler view
-        container_profile.isClickable=true
+        container_profile.isClickable = true
         container_profile.setOnClickListener {
             if (currentUserEntity == null) signIn(this) else {
                 AlertDialog.Builder(this)
@@ -102,12 +103,9 @@ class MainActivity : AppCompatActivity(), AuthHelper {
     }
 
 
-
-
-
     // create new user based on the firebase auth data
     private fun createUser() {
-       // swipe_refresh.isRefreshing = true
+        // swipe_refresh.isRefreshing = true
         remote.createUser(currentUser()!!, object : CreateUserCallback {
             override fun onResponse(user: UserEntity?, error: String?) {
                 //swipe_refresh.isRefreshing = false
@@ -115,16 +113,14 @@ class MainActivity : AppCompatActivity(), AuthHelper {
                     currentUserEntity = user
                     Toaster(this@MainActivity).showToast("Welcome ${currentUser()!!.displayName}")
                     updateStatus(0)
-                    //loadTodoList()
-                  ///  addTodoListListener()
-                   /// addCategoryListListener()
+                    taskFragment?.onSignIn()
+                    calendarFragment?.onSignIn()
                 } else {
                     Toaster(this@MainActivity).showToast(error)
                 }
             }
         })
     }
-
 
 
     // logout from current account and login to another/new account
@@ -142,6 +138,8 @@ class MainActivity : AppCompatActivity(), AuthHelper {
                     updateStatus(0)
                     remote.removeTodoListListener()
                     remote.removeCategoryListListener()
+                    remote.removeCategoryListListenerCalendar()
+                    remote.removeTodoListListenerCalendar()
                 } else {
                     Toaster(this).showToast(getString(R.string.unknown_exception))
                 }
@@ -159,11 +157,13 @@ class MainActivity : AppCompatActivity(), AuthHelper {
 
                     //show img_no_data
                     //adapter.clear()
-                  //  rv_todo_list.visibility = View.INVISIBLE
-                   // img_no_data.visibility = View.VISIBLE
+                    //  rv_todo_list.visibility = View.INVISIBLE
+                    // img_no_data.visibility = View.VISIBLE
                     updateStatus(0)
                     remote.removeTodoListListener()
                     remote.removeCategoryListListener()
+                    remote.removeCategoryListListenerCalendar()
+                    remote.removeTodoListListenerCalendar()
                     signIn(this)
                 } else {
                     Toaster(this).showToast(getString(R.string.unknown_exception))
@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
     }
 
     // update the profile info and the empty data view
-    fun updateStatus(count : Int) {
+    fun updateStatus(count: Int) {
         completeAllMenu?.isVisible = currentUserEntity != null
         clearCompletedMenu?.isVisible = currentUserEntity != null
 
@@ -180,20 +180,20 @@ class MainActivity : AppCompatActivity(), AuthHelper {
             container_profile.visibility = View.VISIBLE
             container_profile.tv_name.text = "Devam etmek için giriş yapınız."
             container_profile.visibility = View.VISIBLE
-            container_profile.tv_status.text=""
+            container_profile.tv_status.text = ""
         } else {
             container_profile.img_profile.load(currentUserEntity!!.image)
             container_profile.tv_name.text = currentUserEntity!!.name
             container_profile.visibility = View.VISIBLE
 
 
-        var status = getString(R.string.label_no_todo_list_found)
+            var status = getString(R.string.label_no_todo_list_found)
 
-        if (count > 0) {
-            status = "${count} to-do(s) found"
-        }
+            if (count > 0) {
+                status = "${count} to-do(s) found"
+            }
 
-        container_profile.tv_status.text = status
+            container_profile.tv_status.text = status
         }
         val calender = Calendar.getInstance()
         val day = calender.get(Calendar.DAY_OF_MONTH)

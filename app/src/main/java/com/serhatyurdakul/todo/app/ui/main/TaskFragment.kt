@@ -51,8 +51,8 @@ class TaskFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var mContext: Context? = null
-     val adapter = TodoAdapter()
-    private var mainActivity:MainActivity? = null
+    val adapter = TodoAdapter()
+    private var mainActivity: MainActivity? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -84,6 +84,7 @@ class TaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        mainActivity?.taskFragment = this
 
         adapter.setListeners(object : TodoClickEvent {
             override fun onClickTodo(todo: TodoEntity, action: String, position: Int) {
@@ -137,6 +138,13 @@ class TaskFragment : Fragment() {
 
     }
 
+    fun onSignIn() {
+        loadTodoList();
+        addTodoListListener()
+        addCategoryListListener()
+
+    }
+
     // load TodoList of current user without listener
     private fun loadTodoList() {
         if (mainActivity!!.currentUserEntity == null) {
@@ -144,28 +152,30 @@ class TaskFragment : Fragment() {
         }
 
         swipe_refresh.isRefreshing = true
-        mainActivity!!.remote.getTodoList(mainActivity!!.currentUserEntity!!, object : TodoListCallback {
-            override fun onResponse(todoList: ArrayList<TodoEntity>?, error: String?) {
-                swipe_refresh.isRefreshing = false
-                if (error != null) {
-                    Toaster(mContext!!).showToast(error)
-                } else {
-                    if (todoList!!.size > 0) {
-                        img_no_data.visibility = View.INVISIBLE
-                        rv_todo_list.visibility = View.VISIBLE
-                        adapter.setTodoList(todoList)
-                        mainActivity!!.updateStatus(adapter.getToDoCount())
+        mainActivity!!.remote.getTodoList(
+            mainActivity!!.currentUserEntity!!,
+            object : TodoListCallback {
+                override fun onResponse(todoList: ArrayList<TodoEntity>?, error: String?) {
+                    swipe_refresh.isRefreshing = false
+                    if (error != null) {
+                        Toaster(mContext!!).showToast(error)
                     } else {
-                        adapter.setTodoList(todoList)
-                        mainActivity!!.updateStatus(adapter.getToDoCount())
-                        if (adapter.getCategoryListArray().isEmpty()) {
-                            img_no_data.visibility = View.VISIBLE
-                            rv_todo_list.visibility = View.INVISIBLE
+                        if (todoList!!.size > 0) {
+                            img_no_data.visibility = View.INVISIBLE
+                            rv_todo_list.visibility = View.VISIBLE
+                            adapter.setTodoList(todoList)
+                            mainActivity!!.updateStatus(adapter.getToDoCount())
+                        } else {
+                            adapter.setTodoList(todoList)
+                            mainActivity!!.updateStatus(adapter.getToDoCount())
+                            if (adapter.getCategoryListArray().isEmpty()) {
+                                img_no_data.visibility = View.VISIBLE
+                                rv_todo_list.visibility = View.INVISIBLE
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
     }
 
     // edit an existing and incomplete todoItem
@@ -186,12 +196,14 @@ class TaskFragment : Fragment() {
 
         binding.filledExposedDropdown.setAdapter(adapterCategory)
         binding.filledExposedDropdown.setOnClickListener {
-            val imm = mContext!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm =
+                mContext!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(it.windowToken, 0)
 
         }
         binding.tilTodoCategory.setOnClickListener {
-            val imm = mContext!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm =
+                mContext!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(it.windowToken, 0)
 
         }
@@ -249,10 +261,8 @@ class TaskFragment : Fragment() {
     }
 
 
-
-
     // add new todoItem with custom alert dialog
-    private fun addTodo( date: Date = Date()) {
+    private fun addTodo(date: Date = Date()) {
         val dateNow = FormatUtil().formatDate(date, FormatUtil.dd_MMM_yyyy)
         if (mainActivity!!.currentUserEntity == null) {
             mainActivity!!.signIn(mainActivity!!); return
@@ -276,12 +286,14 @@ class TaskFragment : Fragment() {
 
             binding.filledExposedDropdown.setAdapter(adapterCategory)
             binding.filledExposedDropdown.setOnClickListener {
-                val imm = mContext!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm =
+                    mContext!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(it.windowToken, 0)
 
             }
             binding.tilTodoCategory.setOnClickListener {
-                val imm = mContext!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm =
+                    mContext!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(it.windowToken, 0)
 
             }
@@ -316,7 +328,13 @@ class TaskFragment : Fragment() {
                     val date = binding.tietTodoDate.text.toString()
                     val category = binding.filledExposedDropdown.text.toString()
                     val todo = TodoEntity(
-                        "", todoTitle, false, date, mainActivity!!.currentUserEntity?.id!!, "", category
+                        "",
+                        todoTitle,
+                        false,
+                        date,
+                        mainActivity!!.currentUserEntity?.id!!,
+                        "",
+                        category
                     )
 
                     mainActivity!!.remote.addTodo(todo, object : TodoCallback {
@@ -415,7 +433,7 @@ class TaskFragment : Fragment() {
     }
 
     // bulk delete all completed todoItems
-     fun clearCompletedTasks() {
+    fun clearCompletedTasks() {
         if (mainActivity!!.currentUserEntity == null) {
             mainActivity!!.signIn(mainActivity!!); return
         }
@@ -430,18 +448,20 @@ class TaskFragment : Fragment() {
             .setMessage(R.string.clear_completed_tasks_warning)
             .setPositiveButton(R.string.label_clear_completed) { _, _ ->
                 swipe_refresh.isRefreshing = true
-                mainActivity!!.remote.deleteTodoList(adapter.getCompletedTodoList(), object : TodoListCallback {
-                    override fun onResponse(todoList: ArrayList<TodoEntity>?, error: String?) {
-                        swipe_refresh.isRefreshing = false
-                        if (error != null) {
-                            Toaster(mContext!!).showToast(error)
-                        } else {
-                            Toaster(mContext!!).showToast(
-                                mContext!!.getString(R.string.clear_completed_tasks_success_message)
-                            )
+                mainActivity!!.remote.deleteTodoList(
+                    adapter.getCompletedTodoList(),
+                    object : TodoListCallback {
+                        override fun onResponse(todoList: ArrayList<TodoEntity>?, error: String?) {
+                            swipe_refresh.isRefreshing = false
+                            if (error != null) {
+                                Toaster(mContext!!).showToast(error)
+                            } else {
+                                Toaster(mContext!!).showToast(
+                                    mContext!!.getString(R.string.clear_completed_tasks_success_message)
+                                )
+                            }
                         }
-                    }
-                })
+                    })
             }
             .setNegativeButton(R.string.label_cancel) { _, _ -> }
             .create()
@@ -507,6 +527,7 @@ class TaskFragment : Fragment() {
             dialog
         )
     }
+
     //show todoItem's details
     private fun showDetails(todo: TodoEntity) {
         val details = "Title: ${todo.todo}\nDate: ${todo.date}"
@@ -519,7 +540,7 @@ class TaskFragment : Fragment() {
     }
 
     // bulk update all incomplete todoItems
-     fun completeAllTasks() {
+    fun completeAllTasks() {
         if (mainActivity!!.currentUserEntity == null) {
             mainActivity!!.signIn(mainActivity!!); return
         }
@@ -537,24 +558,25 @@ class TaskFragment : Fragment() {
                 val incompleteList = ArrayList<TodoEntity>()
                 incompleteList.addAll(adapter.getIncompleteTodoList())
                 incompleteList.forEach { it.completed = true }
-                mainActivity!!.remote.markTodoListAsComplete(incompleteList, object : TodoListCallback {
-                    override fun onResponse(todoList: ArrayList<TodoEntity>?, error: String?) {
-                        swipe_refresh.isRefreshing = false
-                        if (error != null) {
-                            Toaster(mContext!!).showToast(error)
-                        } else {
-                            Toaster(mContext!!).showToast(
-                                getString(R.string.update_incomplete_tasks_success_message)
-                            )
+                mainActivity!!.remote.markTodoListAsComplete(
+                    incompleteList,
+                    object : TodoListCallback {
+                        override fun onResponse(todoList: ArrayList<TodoEntity>?, error: String?) {
+                            swipe_refresh.isRefreshing = false
+                            if (error != null) {
+                                Toaster(mContext!!).showToast(error)
+                            } else {
+                                Toaster(mContext!!).showToast(
+                                    getString(R.string.update_incomplete_tasks_success_message)
+                                )
+                            }
                         }
-                    }
-                })
+                    })
             }
             .setNegativeButton(R.string.label_cancel) { _, _ -> }
             .create()
             .show()
     }
-
 
 
     // get todoItems of current user with firestore listener
@@ -563,27 +585,29 @@ class TaskFragment : Fragment() {
             mainActivity!!.signIn(mainActivity!!); return
         }
 
-        mainActivity!!.remote.addTodoListListener(mainActivity!!.currentUserEntity!!, object : TodoListCallback {
-            override fun onResponse(todoList: ArrayList<TodoEntity>?, error: String?) {
-                if (error != null) {
-                    Toaster(mContext!!).showToast(error)
-                } else {
-                    if (todoList!!.size > 0) {
-                        img_no_data.visibility = View.INVISIBLE
-                        rv_todo_list.visibility = View.VISIBLE
-                        adapter.setTodoList(todoList)
-                        mainActivity!!.updateStatus(adapter.getToDoCount())
+        mainActivity!!.remote.addTodoListListener(
+            mainActivity!!.currentUserEntity!!,
+            object : TodoListCallback {
+                override fun onResponse(todoList: ArrayList<TodoEntity>?, error: String?) {
+                    if (error != null) {
+                        Toaster(mContext!!).showToast(error)
                     } else {
-                        adapter.setTodoList(todoList)
-                        mainActivity!!.updateStatus(adapter.getToDoCount())
-                        if (adapter.getCategoryListArray().isEmpty()) {
-                            img_no_data.visibility = View.VISIBLE
-                            rv_todo_list.visibility = View.INVISIBLE
+                        if (todoList!!.size > 0) {
+                            img_no_data.visibility = View.INVISIBLE
+                            rv_todo_list.visibility = View.VISIBLE
+                            adapter.setTodoList(todoList)
+                            mainActivity!!.updateStatus(adapter.getToDoCount())
+                        } else {
+                            adapter.setTodoList(todoList)
+                            mainActivity!!.updateStatus(adapter.getToDoCount())
+                            if (adapter.getCategoryListArray().isEmpty()) {
+                                img_no_data.visibility = View.VISIBLE
+                                rv_todo_list.visibility = View.INVISIBLE
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
     }
 
     // get todoItems of current user with firestore listener
@@ -592,24 +616,26 @@ class TaskFragment : Fragment() {
             mainActivity!!.signIn(mainActivity!!); return
         }
 
-        mainActivity!!.remote.addCategoryListListener(mainActivity!!.currentUserEntity!!, object : CategoryListCallback {
-            override fun onResponse(categoryList: ArrayList<CategoryEntity>?, error: String?) {
-                if (error != null) {
-                    Toaster(mContext!!).showToast(error)
-                } else {
-                    if (categoryList!!.size > 0) {
-                        img_no_data.visibility = View.INVISIBLE
-                        rv_todo_list.visibility = View.VISIBLE
-                        adapter.setCategoryList(categoryList)
-                        mainActivity!!.updateStatus(adapter.getToDoCount())
+        mainActivity!!.remote.addCategoryListListener(
+            mainActivity!!.currentUserEntity!!,
+            object : CategoryListCallback {
+                override fun onResponse(categoryList: ArrayList<CategoryEntity>?, error: String?) {
+                    if (error != null) {
+                        Toaster(mContext!!).showToast(error)
                     } else {
-                        adapter.setCategoryList(categoryList)
-                        mainActivity!!.updateStatus(adapter.getToDoCount())
+                        if (categoryList!!.size > 0) {
+                            img_no_data.visibility = View.INVISIBLE
+                            rv_todo_list.visibility = View.VISIBLE
+                            adapter.setCategoryList(categoryList)
+                            mainActivity!!.updateStatus(adapter.getToDoCount())
+                        } else {
+                            adapter.setCategoryList(categoryList)
+                            mainActivity!!.updateStatus(adapter.getToDoCount())
 
+                        }
                     }
                 }
-            }
-        })
+            })
     }
 
 
