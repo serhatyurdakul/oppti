@@ -151,7 +151,7 @@ class CalendarFragment : Fragment() {
                     }
                         adapter.setTodoList(tasks)
 
-                    fragmentManager?.let { it1 -> TodoDialogFragment(adapter,dateOfTask).show(it1,"") }
+                    fragmentManager?.let { it1 -> TodoDialogFragment(adapter,dateOfTask,mainActivity!!).show(it1,"") }
                 }
                 var counter =0
                 container.taskOne.visibility=View.INVISIBLE

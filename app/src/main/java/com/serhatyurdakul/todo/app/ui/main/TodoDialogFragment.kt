@@ -8,11 +8,14 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.serhatyurdakul.todo.R
@@ -34,15 +37,15 @@ import kotlinx.android.synthetic.main.fragment_task.*
 import java.util.*
 
 
-class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var title: String) : DialogFragment() {
+class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var title: String,var mainActivity: MainActivity) : DialogFragment() {
     private var mRecyclerView: RecyclerView? = null
     var mDialog : TodoDialogFragment? = null
-    var mainActivity : MainActivity? = null
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         mDialog=this
-        mainActivity = activity as MainActivity
-        mRecyclerView =  RecyclerView(mainActivity!!)
-        mRecyclerView!!.layoutManager=LinearLayoutManager(mainActivity!!)
+
+        mRecyclerView =  RecyclerView(mainActivity)
+        mRecyclerView!!.layoutManager=LinearLayoutManager(mainActivity)
         mRecyclerView!!.adapter=todoAdapter
         todoAdapter.setListeners(object : TodoClickEvent {
             override fun onClickTodo(todo: TodoEntity, action: String, position: Int) {
@@ -63,8 +66,8 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         }
 
         )
-        
-      var alert =  AlertDialog.Builder(activity!!)
+
+      var alert =  AlertDialog.Builder(mainActivity)
         alert.setTitle(title)
         alert.setView(mRecyclerView)
         alert.setPositiveButton("Kapat") { dialogInterface: DialogInterface, i: Int ->
@@ -76,10 +79,16 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
           return alert.create()
     }
 
+    override fun show(manager: FragmentManager, tag: String?) {
+        if(todoAdapter.getToDoCount()==0)
+            addTodo()
+        else
+            super.show(manager, tag)
+    }
 
     // add new todoItem with custom alert dialog
     private fun addTodo() {
-     var mainActivity = activity as MainActivity
+
         if (mainActivity.currentUserEntity == null) {
             mainActivity.signIn(mainActivity); return
         }
@@ -91,7 +100,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
 
             val adapterCategory = ArrayAdapter<String>(
-                mainActivity!!,
+                mainActivity,
                 R.layout.dropdown_menu_popup_item,
                 todoAdapter.getCategoryListArray()
             )
@@ -99,13 +108,13 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
             binding.filledExposedDropdown.setAdapter(adapterCategory)
             binding.filledExposedDropdown.setOnClickListener {
                 val imm =
-                    mainActivity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(it.windowToken, 0)
 
             }
             binding.tilTodoCategory.setOnClickListener {
                 val imm =
-                    mainActivity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(it.windowToken, 0)
 
             }
@@ -123,14 +132,14 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
             }
             binding.tietTodoDate.setOnClickListener {
                 DatePickerDialog(
-                    mainActivity!!, dateListener, myCalendar
+                    mainActivity, dateListener, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
                 ).show()
             }
 
 
-            val dialog = AlertDialog.Builder(mainActivity!!)
+            val dialog = AlertDialog.Builder(mainActivity)
                 .setTitle(R.string.label_add_todo)
                 .setView(binding.root)
                 .setPositiveButton(R.string.label_add_todo) { _, _ ->
@@ -144,20 +153,20 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                         todoTitle,
                         false,
                         date,
-                        mainActivity!!.currentUserEntity?.id!!,
+                        mainActivity.currentUserEntity?.id!!,
                         "",
                         category
                     )
 
-                    mainActivity!!.remote.addTodo(todo, object : TodoCallback {
+                    mainActivity.remote.addTodo(todo, object : TodoCallback {
                         override fun onResponse(todo: TodoEntity?, error: String?) {
 
                             if (error == null) {
-                                Toaster(mainActivity!!).showToast(mainActivity!!.getString(R.string.add_todo_success_message))
+                                Toaster(mainActivity).showToast(mainActivity.getString(R.string.add_todo_success_message))
 
 
                             } else {
-                                Toaster(mainActivity!!).showToast(error)
+                                Toaster(mainActivity).showToast(error)
                             }
                         }
                     })
@@ -170,6 +179,15 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
             dialog.setOnShowListener {
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
             }
+
+        binding.filledExposedDropdown.setOnItemClickListener { _, _, position, _ ->
+            if(todoAdapter.getCategoryListArray()[position]=="Kategori Ekle ")
+            {
+                addCategory()
+                dialog.dismiss()
+            }
+
+        }
             dialog.show()
 
             Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate), dialog)
@@ -178,8 +196,8 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
     }
     // mark a todoItem as complete/incomplete
     private fun toggleMarkAsComplete(todo: TodoEntity, position: Int) {
-        if (mainActivity!!.currentUserEntity == null) {
-            mainActivity!!.signIn(mainActivity!!); return
+        if (mainActivity.currentUserEntity == null) {
+            mainActivity.signIn(mainActivity); return
         }
 
 
@@ -187,13 +205,13 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         var successMessage = R.string.task_marked_as_completed_success_message
         if (todo.completed) successMessage = R.string.task_marked_as_incomplete_success_message
         todo.completed = !todo.completed
-        mainActivity!!.remote.markTodoListAsComplete(arrayListOf(todo), object : TodoListCallback {
+        mainActivity.remote.markTodoListAsComplete(arrayListOf(todo), object : TodoListCallback {
             override fun onResponse(todoList: ArrayList<TodoEntity>?, error: String?) {
 
                 if (error == null) {
-                    Toaster(mainActivity!!).showToast(mainActivity!!.getString(successMessage))
+                    Toaster(mainActivity).showToast(mainActivity.getString(successMessage))
                 } else {
-                    Toaster(mainActivity!!).showToast(error)
+                    Toaster(mainActivity).showToast(error)
                 }
             }
         })
@@ -202,20 +220,20 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
     //delete a todoItem permanently
     private fun deleteTodo(todo: TodoEntity, position: Int) {
-        AlertDialog.Builder(mainActivity!!)
+        AlertDialog.Builder(mainActivity)
             .setTitle(R.string.text_are_you_sure)
             .setMessage(R.string.todo_delete_warning)
             .setPositiveButton(R.string.label_delete) { _, _ ->
 
-                mainActivity!!.remote.deleteTodo(todo, object : TodoCallback {
+                mainActivity.remote.deleteTodo(todo, object : TodoCallback {
                     override fun onResponse(todo: TodoEntity?, error: String?) {
 
                         if (error == null) {
-                            Toaster(mainActivity!!).showToast(mainActivity!!.getString(R.string.delete_todo_success_message))
+                            Toaster(mainActivity).showToast(mainActivity.getString(R.string.delete_todo_success_message))
                             //adapter.getTodoList().remove(todo)
                             //adapter.notifyDataSetChanged()
                         } else {
-                            Toaster(mainActivity!!).showToast(error)
+                            Toaster(mainActivity).showToast(error)
                         }
                     }
                 })
@@ -228,20 +246,20 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
     //delete a categoryItem permanently
     private fun deleteCategory(category: CategoryEntity, position: Int) {
-        AlertDialog.Builder(mainActivity!!)
+        AlertDialog.Builder(mainActivity)
             .setTitle(R.string.text_are_you_sure)
             .setMessage(R.string.todo_delete_warning)
             .setPositiveButton(R.string.label_delete) { _, _ ->
 
-                mainActivity!!.remote.deleteCategory(category, object : CategoryCallback {
+                mainActivity.remote.deleteCategory(category, object : CategoryCallback {
                     override fun onResponse(category: CategoryEntity?, error: String?) {
 
                         if (error == null) {
-                            Toaster(mainActivity!!).showToast(mainActivity!!.getString(R.string.delete_category_success_message))
+                            Toaster(mainActivity).showToast(mainActivity.getString(R.string.delete_category_success_message))
                             //adapter.getTodoList().remove(todo)
                             //adapter.notifyDataSetChanged()
                         } else {
-                            Toaster(mainActivity!!).showToast(error)
+                            Toaster(mainActivity).showToast(error)
                         }
                     }
                 })
@@ -255,7 +273,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
     //show todoItem's details
     private fun showDetails(todo: TodoEntity) {
         val details = "Title: ${todo.todo}\nDate: ${todo.date}"
-        AlertDialog.Builder(mainActivity!!)
+        AlertDialog.Builder(mainActivity)
             .setTitle(R.string.label_details)
             .setMessage(details)
             .setNegativeButton(R.string.label_cancel) { _, _ -> }
@@ -274,7 +292,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         binding.tietTodoDate.text = SpannableStringBuilder(todo.date)
         binding.tietTodoTitle.setSelection(todo.todo.length)
         val adapterCategory = ArrayAdapter<String>(
-            mainActivity!!,
+            mainActivity,
             R.layout.dropdown_menu_popup_item,
             todoAdapter.getCategoryListArray()
         )
@@ -282,13 +300,13 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         binding.filledExposedDropdown.setAdapter(adapterCategory)
         binding.filledExposedDropdown.setOnClickListener {
             val imm =
-                mainActivity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(it.windowToken, 0)
 
         }
         binding.tilTodoCategory.setOnClickListener {
             val imm =
-                mainActivity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(it.windowToken, 0)
 
         }
@@ -303,13 +321,13 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         }
         binding.tietTodoDate.setOnClickListener {
             DatePickerDialog(
-                mainActivity!!, dateListener, myCalendar
+                mainActivity, dateListener, myCalendar
                     .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
 
-        val dialog = AlertDialog.Builder(mainActivity!!)
+        val dialog = AlertDialog.Builder(mainActivity)
             .setTitle(R.string.label_edit_todo)
             .setView(binding.root)
             .setPositiveButton(R.string.label_update_todo) { _, _ ->
@@ -322,14 +340,14 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                 todo.todo = todoTitle
                 todo.date = date
                 todo.category = category
-                mainActivity!!.remote.updateTodo(todo, object : TodoCallback {
+                mainActivity.remote.updateTodo(todo, object : TodoCallback {
                     override fun onResponse(todo: TodoEntity?, error: String?) {
 
                         if (error == null) {
-                            Toaster(mainActivity!!).showToast(mainActivity!!.getString(R.string.update_todo_success_message))
+                            Toaster(mainActivity).showToast(mainActivity.getString(R.string.update_todo_success_message))
                             //adapter.notifyItemChanged(position)
                         } else {
-                            Toaster(mainActivity!!).showToast(error)
+                            Toaster(mainActivity).showToast(error)
                         }
                     }
                 })
@@ -341,13 +359,85 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
         }
+        binding.filledExposedDropdown.setOnItemClickListener { _, _, position, _ ->
+            if(todoAdapter.getCategoryListArray()[position]=="Kategori Ekle ")
+            {
+                addCategory()
+                dialog.dismiss()
+            }
+
+        }
+
+
+
         dialog.show()
 
         Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate), dialog)
     }
+
+    // add new categoryItem with custom alert dialog
+    private fun addCategory() {
+        if (mainActivity.currentUserEntity == null) {
+            mainActivity.signIn(mainActivity); return
+        }
+
+        val binding = DataBindingUtil.inflate<PromptCategoryBinding>(
+            layoutInflater, R.layout.prompt_category, null, false
+        )
+        val colors = mainActivity.resources.getIntArray(R.array.colors)
+        binding.tietCategoryColor.setOnClickListener {
+            ColorSheet().colorPicker(
+                colors = colors,
+                listener = { color ->
+                    binding.tilCategoryColor.setBackgroundColor(color)
+                    binding.tietCategoryColor.setText(" ")
+                })
+                .show(mainActivity.supportFragmentManager)
+
+        }
+
+        val dialog = AlertDialog.Builder(mainActivity)
+            .setTitle(R.string.label_add_category)
+            .setView(binding.root)
+            .setPositiveButton(R.string.label_add_category) { _, _ ->
+                swipe_refresh.isRefreshing = true
+
+                val categoryTitle = binding.tietCategoryTitle.text.toString()
+                var colorInt = (binding.tilCategoryColor.background as ColorDrawable).color
+                val hexColor = String.format("%06X", 0xFFFFFF and colorInt)
+                val category = CategoryEntity(
+                    "", categoryTitle, mainActivity.currentUserEntity?.id!!, hexColor
+                )
+
+                mainActivity.remote.addCategory(category, object : CategoryCallback {
+                    override fun onResponse(category: CategoryEntity?, error: String?) {
+                        swipe_refresh.isRefreshing = false
+                        if (error == null) {
+                            Toaster(mainActivity).showToast(mainActivity.getString(R.string.add_category_success_message))
+
+                        } else {
+                            Toaster(mainActivity).showToast(error)
+                        }
+                    }
+                })
+            }
+            .setNegativeButton(R.string.label_cancel) { _, _ -> }
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+        }
+        dialog.show()
+
+        Validator.forceValidation(
+            arrayOf(binding.tietCategoryTitle, binding.tietCategoryColor),
+            dialog
+        )
+    }
+
     private fun editCategory(category: CategoryEntity) {
-        if (mainActivity!!.currentUserEntity == null) {
-            mainActivity!!.signIn(mainActivity!!); return
+        if (mainActivity.currentUserEntity == null) {
+            mainActivity.signIn(mainActivity); return
         }
 
         val binding = DataBindingUtil.inflate<PromptCategoryBinding>(
@@ -370,10 +460,10 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                     binding.tilCategoryColor.setBackgroundColor(color)
                     binding.tietCategoryColor.setText(" ")
                 })
-                .show(fragmentManager!!)
+                .show(mainActivity.supportFragmentManager)
 
         }
-        val dialog = AlertDialog.Builder(mainActivity!!)
+        val dialog = AlertDialog.Builder(mainActivity)
             .setTitle(R.string.label_edit_category)
             .setView(binding.root)
             .setPositiveButton(R.string.label_edit_category) { _, _ ->
@@ -386,14 +476,14 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
                 category.title = categoryTitle
                 category.color = hexColor
-                mainActivity!!.remote.updateCategory(category, object : CategoryCallback {
+                mainActivity.remote.updateCategory(category, object : CategoryCallback {
                     override fun onResponse(category: CategoryEntity?, error: String?) {
 
                         if (error == null) {
-                            Toaster(mainActivity!!).showToast(mainActivity!!.getString(R.string.update_category_success_message))
+                            Toaster(mainActivity).showToast(mainActivity.getString(R.string.update_category_success_message))
 
                         } else {
-                            Toaster(mainActivity!!).showToast(error)
+                            Toaster(mainActivity).showToast(error)
                         }
                     }
                 })

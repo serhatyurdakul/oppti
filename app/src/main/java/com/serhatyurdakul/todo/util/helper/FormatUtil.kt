@@ -1,7 +1,10 @@
 package com.serhatyurdakul.todo.util.helper
 
 import android.text.format.DateFormat
+
+import java.text.SimpleDateFormat
 import java.util.*
+
 
 /*
 * All type of formatter(i.e. date formatter) in one place
@@ -19,6 +22,13 @@ class FormatUtil {
         } catch (ex: Exception) {
             date.toString()
         }
+    }
+
+    fun getTimeStampFromDate(dateString:String):Long
+    {
+        val formatter: SimpleDateFormat = SimpleDateFormat(dd_MMM_yyyy,Locale.ENGLISH)
+        val date = formatter.parse(dateString) as Date
+        return date.time
     }
 
     fun toMonth(date: Date): String {

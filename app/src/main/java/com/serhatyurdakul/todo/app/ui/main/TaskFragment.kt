@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
@@ -201,6 +202,10 @@ class TaskFragment : Fragment() {
             imm.hideSoftInputFromWindow(it.windowToken, 0)
 
         }
+
+
+
+
         binding.tilTodoCategory.setOnClickListener {
             val imm =
                 mContext!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -255,6 +260,19 @@ class TaskFragment : Fragment() {
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
         }
+
+        binding.filledExposedDropdown.setOnItemClickListener { _, _, position, _ ->
+            if(adapter.getCategoryListArray()[position]=="Kategori Ekle ")
+            {
+                addCategory()
+                dialog.dismiss()
+            }
+
+        }
+
+
+
+
         dialog.show()
 
         Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate), dialog)
@@ -356,6 +374,17 @@ class TaskFragment : Fragment() {
             dialog.setOnShowListener {
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
             }
+
+            binding.filledExposedDropdown.setOnItemClickListener { _, _, position, _ ->
+                if(adapter.getCategoryListArray()[position]=="Kategori Ekle ")
+                {
+                    addCategory()
+                    dialog.dismiss()
+                }
+
+            }
+
+
             dialog.show()
 
             Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate), dialog)

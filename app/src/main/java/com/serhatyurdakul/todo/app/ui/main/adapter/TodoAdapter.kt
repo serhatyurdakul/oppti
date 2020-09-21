@@ -13,6 +13,7 @@ import com.serhatyurdakul.todo.app.ui.main.holder.CategoryHolder
 import com.serhatyurdakul.todo.app.ui.main.holder.TodoHolder
 import com.serhatyurdakul.todo.databinding.ItemCategoryBinding
 import com.serhatyurdakul.todo.databinding.ItemTodoBinding
+import com.serhatyurdakul.todo.util.helper.FormatUtil
 
 /*
 * Recycler view Adpater.
@@ -34,7 +35,7 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setTodoList(listOfTodo: List<TodoEntity>) {
         this.listOfTodos.clear()
-        this.listOfTodos.addAll(listOfTodo)
+        this.listOfTodos.addAll(listOfTodo.sortedWith(compareBy { FormatUtil().getTimeStampFromDate(it.date)}))
         organizeList()
 
     }
@@ -65,12 +66,14 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun getCategoryListArray(): Array<String> {
-        val strings = Array<String>(listOfCategories.size) { "it = $it" }
+        val strings = Array<String>(listOfCategories.size+1) { "it = $it" }
         var count = 0
         for (cat in listOfCategories) {
             strings[count++] = cat.title
 
         }
+        if(count>0)
+            strings[count]="Kategori Ekle "
         return strings
     }
 
@@ -113,7 +116,7 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 list.add(CategoryEntity("-1","Diğer","","455A64"))
                 list.addAll(leftOverTodos)
             }
-            list.addAll(leftOverCategories)
+         //Removed listing empty categories   list.addAll(leftOverCategories)
 
         }
         notifyDataSetChanged()
