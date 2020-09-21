@@ -205,6 +205,7 @@ class FireStoreService : FireStoreMapper {
         val tasks = ArrayList<Task<Void>>()
         tasks.add(todoDoc.update(Const.Key.Todo.TODO, todo.todo))
         tasks.add(todoDoc.update(Const.Key.Todo.DATE, todo.date))
+        tasks.add(todoDoc.update(Const.Key.Todo.CATEGORY, todo.category))
 
         Tasks.whenAllSuccess<Void>(tasks).addOnSuccessListener {
             callback.onResponse(todo, null)
