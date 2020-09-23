@@ -400,7 +400,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
             .setTitle(R.string.label_add_category)
             .setView(binding.root)
             .setPositiveButton(R.string.label_add_category) { _, _ ->
-                swipe_refresh.isRefreshing = true
+
 
                 val categoryTitle = binding.tietCategoryTitle.text.toString()
                 var colorInt = (binding.tilCategoryColor.background as ColorDrawable).color
@@ -411,7 +411,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
                 mainActivity.remote.addCategory(category, object : CategoryCallback {
                     override fun onResponse(category: CategoryEntity?, error: String?) {
-                        swipe_refresh.isRefreshing = false
+
                         if (error == null) {
                             Toaster(mainActivity).showToast(mainActivity.getString(R.string.add_category_success_message))
 
