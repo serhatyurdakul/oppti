@@ -145,7 +145,7 @@ class CalendarFragment : Fragment() {
                     myCalendar.set(Calendar.MONTH, day.date.monthValue-1)
                     myCalendar.set(Calendar.DAY_OF_MONTH, day.date.dayOfMonth)
                     val dateOfTask = FormatUtil().formatDate(myCalendar.time, FormatUtil.dd_MMM_yyyy)
-                    var adapter =TodoAdapter()
+                    var adapter =TodoAdapter(true)
                     categoryList?.let {
                         adapter.setCategoryList(categoryList!!)
                     }

@@ -20,7 +20,7 @@ import com.serhatyurdakul.todo.util.helper.FormatUtil
 * It shows the todoItems list.
 * It needs a list of todoItems and a TodoClickEvent listener
 */
-class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TodoAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var list = ArrayList<Any>()
     private var listOfTodos = ArrayList<TodoEntity>()
@@ -32,10 +32,16 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val VIEW_TYPE_CATEGORY = 2
 
     private var categoryVisible = true
+    private var fromCalendar = false
+
+
+    constructor(fromCalendar: Boolean) : this() {
+        this.fromCalendar = fromCalendar
+    }
 
     fun setTodoList(listOfTodo: List<TodoEntity>) {
         this.listOfTodos.clear()
-        this.listOfTodos.addAll(listOfTodo.sortedWith(compareBy { FormatUtil().getTimeStampFromDate(it.date)}))
+        this.listOfTodos.addAll(listOfTodo.sortedWith(compareBy { it.dateEpoch}))
         organizeList()
 
     }
@@ -117,7 +123,7 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 list.addAll(leftOverTodos)
             }
          //Removed listing empty categories( if todo items exist)
-            if(list.size==0)
+            if(list.size==0||!fromCalendar)
             list.addAll(leftOverCategories)
 
         }

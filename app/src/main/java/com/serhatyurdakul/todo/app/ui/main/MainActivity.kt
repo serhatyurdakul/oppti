@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
                 //swipe_refresh.isRefreshing = false
                 if (error == null) {
                     currentUserEntity = user
-                    Toaster(this@MainActivity).showToast("Welcome ${currentUser()!!.displayName}")
+                    Toaster(this@MainActivity).showToast("Hosgeldin ${currentUser()!!.displayName}")
                     updateStatus(0)
                     taskFragment?.onSignIn()
                     calendarFragment?.onSignIn()
@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
             var status = getString(R.string.label_no_todo_list_found)
 
             if (count > 0) {
-                status = "${count} to-do(s) found"
+                status = "${count} gorev bulundu"
             }
 
             container_profile.tv_status.text = status
@@ -221,7 +221,7 @@ class MainActivity : AppCompatActivity(), AuthHelper {
             // Create the NotificationChannel
             val name = "Reminder"
             val descriptionText = "Görev hatırlatıcı"
-            val mChannel = NotificationChannel("1111", name, NotificationManager.IMPORTANCE_DEFAULT)
+            val mChannel = NotificationChannel("Reminder", name, NotificationManager.IMPORTANCE_DEFAULT)
             mChannel.description = descriptionText
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this

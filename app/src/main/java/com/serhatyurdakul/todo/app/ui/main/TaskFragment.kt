@@ -398,7 +398,7 @@ class TaskFragment : Fragment() {
 
                                 val intent = Intent(mainActivity!!,ReminderBroadcast::class.java)
                                 intent.putExtra("title",todo!!.todo)
-                                val pendingIntent = PendingIntent.getBroadcast(mainActivity,0,intent,0)
+                                val pendingIntent = PendingIntent.getBroadcast(mainActivity,Random().nextInt(),intent,0)
                                 val alarmManager = mainActivity!!.getSystemService(ALARM_SERVICE) as AlarmManager
                                 alarmManager.set(AlarmManager.RTC_WAKEUP,todo.dateEpoch,pendingIntent)
 

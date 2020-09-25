@@ -1,6 +1,8 @@
 package com.serhatyurdakul.todo.app.ui.main.holder
 
+import android.annotation.SuppressLint
 import android.graphics.Color
+import android.text.SpannableStringBuilder
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -8,12 +10,18 @@ import com.serhatyurdakul.todo.R
 import com.serhatyurdakul.todo.app.data.local.todo.TodoEntity
 import com.serhatyurdakul.todo.app.ui.main.callback.TodoClickEvent
 import com.serhatyurdakul.todo.databinding.ItemTodoBinding
+import java.util.*
 
 class TodoHolder(private val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root) {
 
+    @SuppressLint("SetTextI18n")
     fun bind(todo: TodoEntity, callback: TodoClickEvent?) {
+        var tempCalendar = Calendar.getInstance()
+        tempCalendar.timeInMillis=todo.dateEpoch
+
         binding.tvTodo.text = todo.todo
-        binding.tvDate.text = todo.date
+        binding.tvDate.text = todo.date +" "+tempCalendar.get(Calendar.HOUR_OF_DAY)+":"+tempCalendar.get(
+            Calendar.MINUTE)
         // if the task is complete make the text gray, change the icon, and hide the edit button
         // else make it black, show different icon, and show the edit icon
         if (todo.completed) {
