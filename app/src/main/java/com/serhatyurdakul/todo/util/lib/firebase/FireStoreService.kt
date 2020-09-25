@@ -206,6 +206,7 @@ class FireStoreService : FireStoreMapper {
         tasks.add(todoDoc.update(Const.Key.Todo.TODO, todo.todo))
         tasks.add(todoDoc.update(Const.Key.Todo.DATE, todo.date))
         tasks.add(todoDoc.update(Const.Key.Todo.CATEGORY, todo.category))
+        tasks.add(todoDoc.update(Const.Key.Todo.DATEEPOCH, todo.dateEpoch))
 
         Tasks.whenAllSuccess<Void>(tasks).addOnSuccessListener {
             callback.onResponse(todo, null)

@@ -34,6 +34,7 @@ object Const {
                 const val TODO = "todo"
                 const val COMPLETED = "completed"
                 const val DATE = "date"
+                const val DATEEPOCH = "dateEpoch"
                 const val USER = "user"
                 const val CREATED_AT = "created_at"
                 const val CATEGORY = "category"

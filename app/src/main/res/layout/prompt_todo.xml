@@ -45,7 +45,29 @@
                     android:clickable="true"
                     android:focusable="false"
                     android:inputType="none"
-                    android:singleLine="true"></com.google.android.material.textfield.TextInputEditText>
+                    android:singleLine="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_todo_time"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_10"
+                android:hint="@string/hint_time"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_todo_date">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/tiet_todo_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:inputType="none"
+                    android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -58,7 +80,7 @@
 
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_todo_date">
+                app:layout_constraintTop_toBottomOf="@+id/til_todo_time">
 
             <AutoCompleteTextView
                     android:id="@+id/filled_exposed_dropdown"

@@ -21,6 +21,7 @@
     <string name="hint_category">Kategori</string>
     <string name="hint_color">Renk</string>
     <string name="hint_date">Tarih</string>
+    <string name="hint_time">Saat</string>
 
     <string name="text_are_you_sure">Emin misin?</string>
 

@@ -1,12 +1,16 @@
 package com.serhatyurdakul.todo.app.ui.main
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
@@ -58,6 +62,8 @@ class MainActivity : AppCompatActivity(), AuthHelper {
             ///  addTodoListListener()
             /// addCategoryListListener()
         }
+
+        createNotificationChannel();
     }
 
     private fun initView() {
@@ -209,5 +215,21 @@ class MainActivity : AppCompatActivity(), AuthHelper {
         super.onDestroy()
     }
 
+    fun createNotificationChannel()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create the NotificationChannel
+            val name = "Reminder"
+            val descriptionText = "Görev hatırlatıcı"
+            val mChannel = NotificationChannel("1111", name, NotificationManager.IMPORTANCE_DEFAULT)
+            mChannel.description = descriptionText
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManagerCompat.from(this).createNotificationChannel(mChannel)
+
+        }
+
+
+    }
 
 }

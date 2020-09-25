@@ -1,9 +1,9 @@
 package com.serhatyurdakul.todo.app.ui.main
 
-import android.app.DatePickerDialog
-import android.app.Dialog
+import android.app.*
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -137,7 +137,19 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                     myCalendar.get(Calendar.DAY_OF_MONTH)
                 ).show()
             }
+        binding.tietTodoTime.text = SpannableStringBuilder("12:00")
 
+
+        val timeListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+            myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            myCalendar.set(Calendar.MINUTE, minute)
+            val timeSelected = "$hourOfDay:$minute"
+            binding.tietTodoTime.text = SpannableStringBuilder(timeSelected)
+
+        }
+        binding.tietTodoTime.setOnClickListener {
+            TimePickerDialog(mainActivity,timeListener,12,0,true).show()
+        }
 
             val dialog = AlertDialog.Builder(mainActivity)
                 .setTitle(R.string.label_add_todo)
@@ -147,12 +159,14 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
                     val todoTitle = binding.tietTodoTitle.text.toString()
                     val date = binding.tietTodoDate.text.toString()
+                    val dateEpoch = myCalendar.timeInMillis
                     val category = binding.filledExposedDropdown.text.toString()
                     val todo = TodoEntity(
                         "",
                         todoTitle,
                         false,
                         date,
+                        dateEpoch,
                         mainActivity.currentUserEntity?.id!!,
                         "",
                         category
@@ -163,7 +177,11 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
                             if (error == null) {
                                 Toaster(mainActivity).showToast(mainActivity.getString(R.string.add_todo_success_message))
-
+                                val intent = Intent(mainActivity,ReminderBroadcast::class.java)
+                                intent.putExtra("title",todo!!.todo)
+                                val pendingIntent = PendingIntent.getBroadcast(mainActivity,0,intent,0)
+                                val alarmManager = mainActivity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                alarmManager.set(AlarmManager.RTC_WAKEUP,todo.dateEpoch,pendingIntent)
 
                             } else {
                                 Toaster(mainActivity).showToast(error)
@@ -326,6 +344,22 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                 myCalendar.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
+        var tempCalendar = Calendar.getInstance()
+        tempCalendar.timeInMillis=todo.dateEpoch
+        binding.tietTodoTime.text = SpannableStringBuilder(""+tempCalendar.get(Calendar.HOUR_OF_DAY)+":"+tempCalendar.get(Calendar.MINUTE))
+
+
+
+        val timeListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+            myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            myCalendar.set(Calendar.MINUTE, minute)
+            val timeSelected = "$hourOfDay:$minute"
+            binding.tietTodoTime.text = SpannableStringBuilder(timeSelected)
+
+        }
+        binding.tietTodoTime.setOnClickListener {
+            TimePickerDialog(mainActivity,timeListener,12,0,true).show()
+        }
 
         val dialog = AlertDialog.Builder(mainActivity)
             .setTitle(R.string.label_edit_todo)
@@ -335,11 +369,13 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
                 val todoTitle = binding.tietTodoTitle.text.toString()
                 val date = binding.tietTodoDate.text.toString()
+
                 val category = binding.filledExposedDropdown.text.toString()
 
                 todo.todo = todoTitle
                 todo.date = date
                 todo.category = category
+                todo.dateEpoch = myCalendar.timeInMillis
                 mainActivity.remote.updateTodo(todo, object : TodoCallback {
                     override fun onResponse(todo: TodoEntity?, error: String?) {
 

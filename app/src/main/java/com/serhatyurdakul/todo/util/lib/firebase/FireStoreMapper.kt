@@ -91,6 +91,7 @@ interface FireStoreMapper {
         todoObject[Const.Key.Todo.TODO] = todo.todo
         todoObject[Const.Key.Todo.COMPLETED] = todo.completed
         todoObject[Const.Key.Todo.DATE] = todo.date
+        todoObject[Const.Key.Todo.DATEEPOCH] = todo.dateEpoch
         todoObject[Const.Key.Todo.USER] = todo.user
         todoObject[Const.Key.Todo.CREATED_AT] = FieldValue.serverTimestamp()
         todoObject[Const.Key.Todo.CATEGORY] = todo.category
@@ -106,6 +107,7 @@ interface FireStoreMapper {
         val todo = data[Const.Key.Todo.TODO] as String
         val completed = data[Const.Key.Todo.COMPLETED] as Boolean
         val date = data[Const.Key.Todo.DATE] as String
+        val dateEpoch = data[Const.Key.Todo.DATEEPOCH] as Long
         val user = data[Const.Key.Todo.USER] as String
         val category = data[Const.Key.Todo.CATEGORY] as String
         val timestamp = data[Const.Key.Todo.CREATED_AT]
@@ -114,7 +116,7 @@ interface FireStoreMapper {
         val createdAt = FormatUtil().formatDate(timestampToDate, FormatUtil.dd_MMM_yyyy)
 
         return TodoEntity(
-            todoId, todo, completed, date, user, createdAt, category
+            todoId, todo, completed, date,dateEpoch, user, createdAt, category
         )
     }
 

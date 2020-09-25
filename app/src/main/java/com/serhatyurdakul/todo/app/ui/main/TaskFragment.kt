@@ -1,8 +1,9 @@
 package com.serhatyurdakul.todo.app.ui.main
 
-import android.app.Activity
-import android.app.DatePickerDialog
+import android.app.*
 import android.content.Context
+import android.content.Context.ALARM_SERVICE
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -228,6 +229,21 @@ class TaskFragment : Fragment() {
                 myCalendar.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
+        var tempCalendar = Calendar.getInstance()
+        tempCalendar.timeInMillis=todo.dateEpoch
+        binding.tietTodoTime.text = SpannableStringBuilder(""+tempCalendar.get(Calendar.HOUR_OF_DAY)+":"+tempCalendar.get(Calendar.MINUTE))
+
+
+        val timeListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+            myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            myCalendar.set(Calendar.MINUTE, minute)
+            val timeSelected = "$hourOfDay:$minute"
+            binding.tietTodoTime.text = SpannableStringBuilder(timeSelected)
+
+        }
+        binding.tietTodoTime.setOnClickListener {
+            TimePickerDialog(mContext!!,timeListener,12,0,true).show()
+        }
 
         val dialog = AlertDialog.Builder(mContext!!)
             .setTitle(R.string.label_edit_todo)
@@ -242,6 +258,7 @@ class TaskFragment : Fragment() {
                 todo.todo = todoTitle
                 todo.date = date
                 todo.category = category
+                todo.dateEpoch = myCalendar.timeInMillis
                 mainActivity!!.remote.updateTodo(todo, object : TodoCallback {
                     override fun onResponse(todo: TodoEntity?, error: String?) {
                         swipe_refresh.isRefreshing = false
@@ -335,6 +352,22 @@ class TaskFragment : Fragment() {
                 ).show()
             }
 
+            binding.tietTodoTime.text = SpannableStringBuilder("12:00")
+
+
+            val timeListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+                myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                myCalendar.set(Calendar.MINUTE, minute)
+                val timeSelected = "$hourOfDay:$minute"
+                binding.tietTodoTime.text = SpannableStringBuilder(timeSelected)
+
+            }
+            binding.tietTodoTime.setOnClickListener {
+               TimePickerDialog(mContext!!,timeListener,12,0,true).show()
+            }
+
+
+
 
             val dialog = AlertDialog.Builder(mContext!!)
                 .setTitle(R.string.label_add_todo)
@@ -344,12 +377,14 @@ class TaskFragment : Fragment() {
 
                     val todoTitle = binding.tietTodoTitle.text.toString()
                     val date = binding.tietTodoDate.text.toString()
+                    val dateEpoch = myCalendar.timeInMillis
                     val category = binding.filledExposedDropdown.text.toString()
                     val todo = TodoEntity(
                         "",
                         todoTitle,
                         false,
                         date,
+                        dateEpoch,
                         mainActivity!!.currentUserEntity?.id!!,
                         "",
                         category
@@ -361,6 +396,11 @@ class TaskFragment : Fragment() {
                             if (error == null) {
                                 Toaster(mContext!!).showToast(getString(R.string.add_todo_success_message))
 
+                                val intent = Intent(mainActivity!!,ReminderBroadcast::class.java)
+                                intent.putExtra("title",todo!!.todo)
+                                val pendingIntent = PendingIntent.getBroadcast(mainActivity,0,intent,0)
+                                val alarmManager = mainActivity!!.getSystemService(ALARM_SERVICE) as AlarmManager
+                                alarmManager.set(AlarmManager.RTC_WAKEUP,todo.dateEpoch,pendingIntent)
 
                             } else {
                                 Toaster(mContext!!).showToast(error)

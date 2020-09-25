@@ -5,6 +5,7 @@ data class TodoEntity(
     var todo: String,
     var completed: Boolean,
     var date: String,
+    var dateEpoch: Long,
     val user: String,
     var createdAt: String,
     var category: String
