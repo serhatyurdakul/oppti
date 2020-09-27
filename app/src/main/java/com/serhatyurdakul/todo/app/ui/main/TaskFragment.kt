@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -56,6 +57,8 @@ class TaskFragment : Fragment() {
     private var mContext: Context? = null
     val adapter = TodoAdapter()
     private var mainActivity: MainActivity? = null
+    var dialogAddTodo: AlertDialog?= null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -247,7 +250,7 @@ class TaskFragment : Fragment() {
             TimePickerDialog(mContext!!,timeListener,myCalendar.get(Calendar.HOUR_OF_DAY),myCalendar.get(Calendar.MINUTE),true).show()
         }
 
-        val dialog = AlertDialog.Builder(mContext!!)
+         dialogAddTodo = AlertDialog.Builder(mContext!!)
             .setTitle(R.string.label_edit_todo)
             .setView(binding.root)
             .setPositiveButton(R.string.label_update_todo) { _, _ ->
@@ -280,15 +283,15 @@ class TaskFragment : Fragment() {
             .setNegativeButton(R.string.label_cancel) { _, _ -> }
             .create()
 
-        dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+        dialogAddTodo?.setOnShowListener {
+            dialogAddTodo?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = false
         }
 
         binding.filledExposedDropdown.setOnItemClickListener { _, _, position, _ ->
             if(adapter.getCategoryListArray()[position]=="Kategori Ekle ")
             {
-                addCategory()
-                dialog.dismiss()
+                addCategory(true,false)
+               // dialog.dismiss()
             }
 
         }
@@ -296,9 +299,9 @@ class TaskFragment : Fragment() {
 
 
 
-        dialog.show()
+        dialogAddTodo?.show()
 
-        Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate, binding.tietTodoTime), dialog)
+        Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate, binding.tietTodoTime), dialogAddTodo!!)
     }
 
 
@@ -312,7 +315,7 @@ class TaskFragment : Fragment() {
 
         if (adapter.getCategoryListArray().isEmpty()) {
             Toaster(mContext!!).showToast("Önce kategori eklemeniz gerekiyor.")
-            addCategory(true)
+            addCategory(true,true)
         } else {
             val binding = DataBindingUtil.inflate<PromptTodoBinding>(
                 layoutInflater, R.layout.prompt_todo, null, false
@@ -376,7 +379,7 @@ class TaskFragment : Fragment() {
 
 
 
-            val dialog = AlertDialog.Builder(mContext!!)
+             dialogAddTodo = AlertDialog.Builder(mContext!!)
                 .setTitle(R.string.label_add_todo)
                 .setView(binding.root)
                 .setPositiveButton(R.string.label_add_todo) { _, _ ->
@@ -418,23 +421,23 @@ class TaskFragment : Fragment() {
                 .setNegativeButton(R.string.label_cancel) { _, _ -> }
                 .create()
 
-            dialog.setOnShowListener {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+            dialogAddTodo?.setOnShowListener {
+                dialogAddTodo?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = false
             }
 
             binding.filledExposedDropdown.setOnItemClickListener { _, _, position, _ ->
                 if(adapter.getCategoryListArray()[position]=="Kategori Ekle ")
                 {
-                    addCategory()
-                    dialog.dismiss()
+                    addCategory(true,false)
+                  //  dialog.dismiss()
                 }
 
             }
 
 
-            dialog.show()
+            dialogAddTodo?.show()
 
-            Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate, binding.tietTodoTime), dialog)
+            Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate, binding.tietTodoTime), dialogAddTodo!!)
         }
 
     }
@@ -545,7 +548,7 @@ class TaskFragment : Fragment() {
     }
 
     // add new categoryItem with custom alert dialog
-    private fun addCategory(shouldAddTodo: Boolean = false) {
+    private fun addCategory(shouldAddTodo: Boolean = false,createAddTodoDialog: Boolean = false) {
         if (mainActivity!!.currentUserEntity == null) {
             mainActivity!!.signIn(mainActivity!!); return
         }
@@ -565,7 +568,7 @@ class TaskFragment : Fragment() {
 
         }
 
-        val dialog = AlertDialog.Builder(mContext!!)
+          val dialog = AlertDialog.Builder(mContext!!)
             .setTitle(R.string.label_add_category)
             .setView(binding.root)
             .setPositiveButton(R.string.label_add_category) { _, _ ->
@@ -584,8 +587,22 @@ class TaskFragment : Fragment() {
                         if (error == null) {
                             Toaster(mContext!!).showToast(getString(R.string.add_category_success_message))
                             if(shouldAddTodo) {
+                                if(!adapter.listOfCategories.contains(category!!))
                                 adapter.listOfCategories.add(category!!)
+                                if(createAddTodoDialog)
                                 addTodo()
+                                else
+                                {
+
+                                    val adapterCategory = ArrayAdapter<String>(
+                                        mContext,
+                                        R.layout.dropdown_menu_popup_item,
+                                        adapter.getCategoryListArray()
+                                    )
+                                    dialogAddTodo?.findViewById<AutoCompleteTextView>(R.id.filled_exposed_dropdown)?.setAdapter(adapterCategory)
+                                    dialogAddTodo?.findViewById<AutoCompleteTextView>(R.id.filled_exposed_dropdown)?.setText(category.title,false)
+                                }
+
                             }
                         } else {
                             Toaster(mContext!!).showToast(error)
@@ -596,14 +613,14 @@ class TaskFragment : Fragment() {
             .setNegativeButton(R.string.label_cancel) { _, _ -> }
             .create()
 
-        dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+        dialog?.setOnShowListener {
+            dialog?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = false
         }
-        dialog.show()
+        dialog?.show()
 
         Validator.forceValidation(
             arrayOf(binding.tietCategoryTitle, binding.tietCategoryColor),
-            dialog
+            dialog!!
         )
     }
 

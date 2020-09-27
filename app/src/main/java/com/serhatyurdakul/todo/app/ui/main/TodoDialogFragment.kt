@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -38,7 +39,7 @@ import java.util.*
 class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var title: String,var mainActivity: MainActivity) : DialogFragment() {
     private var mRecyclerView: RecyclerView? = null
     var mDialog : TodoDialogFragment? = null
-
+    var dialogAddTodo: AlertDialog?= null
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         mDialog=this
 
@@ -81,7 +82,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         if(todoAdapter.getToDoCount()==0)
         {
             if(todoAdapter.getCategoryListArray().isEmpty())
-                addCategory()
+                addCategory(true)
             else
                 addTodo()
 
@@ -156,7 +157,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
             TimePickerDialog(mainActivity,timeListener,myCalendar.get(Calendar.HOUR_OF_DAY),myCalendar.get(Calendar.MINUTE),true).show()
         }
 
-            val dialog = AlertDialog.Builder(mainActivity)
+             dialogAddTodo = AlertDialog.Builder(mainActivity)
                 .setTitle(R.string.label_add_todo)
                 .setView(binding.root)
                 .setPositiveButton(R.string.label_add_todo) { _, _ ->
@@ -202,21 +203,21 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                 .setNegativeButton(R.string.label_cancel) { _, _ -> }
                 .create()
 
-            dialog.setOnShowListener {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+            dialogAddTodo?.setOnShowListener {
+                dialogAddTodo?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = false
             }
 
         binding.filledExposedDropdown.setOnItemClickListener { _, _, position, _ ->
             if(todoAdapter.getCategoryListArray()[position]=="Kategori Ekle ")
             {
-                addCategory()
-                dialog.dismiss()
+                addCategory(false)
+               // dialog.dismiss()
             }
 
         }
-            dialog.show()
+            dialogAddTodo?.show()
 
-            Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate , binding.tietTodoTime), dialog)
+            Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate , binding.tietTodoTime), dialogAddTodo!!)
 
 
     }
@@ -413,8 +414,8 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         binding.filledExposedDropdown.setOnItemClickListener { _, _, position, _ ->
             if(todoAdapter.getCategoryListArray()[position]=="Kategori Ekle ")
             {
-                addCategory()
-                dialog.dismiss()
+                addCategory(false)
+              //  dialog.dismiss()
             }
 
         }
@@ -427,7 +428,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
     }
 
     // add new categoryItem with custom alert dialog
-    private fun addCategory() {
+    private fun addCategory(createAddTodoDialog: Boolean = false) {
         if (mainActivity.currentUserEntity == null) {
             mainActivity.signIn(mainActivity); return
         }
@@ -467,7 +468,19 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                             Toaster(mainActivity).showToast(mainActivity.getString(R.string.add_category_success_message))
                         /////////////
                             todoAdapter.listOfCategories.add(category!!)
-                              addTodo()
+                            if(createAddTodoDialog)
+                                addTodo()
+                            else
+                            {
+
+                                val adapterCategory = ArrayAdapter<String>(
+                                    mainActivity,
+                                    R.layout.dropdown_menu_popup_item,
+                                    todoAdapter.getCategoryListArray()
+                                )
+                                dialogAddTodo?.findViewById<AutoCompleteTextView>(R.id.filled_exposed_dropdown)?.setAdapter(adapterCategory)
+                                dialogAddTodo?.findViewById<AutoCompleteTextView>(R.id.filled_exposed_dropdown)?.setText(category.title,false)
+                            }
 
 
                         } else {
