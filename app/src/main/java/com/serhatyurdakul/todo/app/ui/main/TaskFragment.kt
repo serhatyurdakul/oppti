@@ -1,6 +1,7 @@
 package com.serhatyurdakul.todo.app.ui.main
 
 import android.app.*
+import android.app.PendingIntent.FLAG_CANCEL_CURRENT
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
@@ -12,13 +13,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.serhatyurdakul.todo.R
 import com.serhatyurdakul.todo.app.data.local.category.CategoryEntity
 import com.serhatyurdakul.todo.app.data.local.todo.TodoEntity
@@ -231,18 +232,19 @@ class TaskFragment : Fragment() {
         }
         var tempCalendar = Calendar.getInstance()
         tempCalendar.timeInMillis=todo.dateEpoch
-        binding.tietTodoTime.text = SpannableStringBuilder(""+tempCalendar.get(Calendar.HOUR_OF_DAY)+":"+tempCalendar.get(Calendar.MINUTE))
+        binding.tietTodoTime.text = SpannableStringBuilder(String.format("%02d:%02d", tempCalendar.get(Calendar.HOUR_OF_DAY),tempCalendar.get(Calendar.MINUTE)))
 
 
         val timeListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
             myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             myCalendar.set(Calendar.MINUTE, minute)
+            myCalendar.set(Calendar.SECOND, 0)
             val timeSelected = "$hourOfDay:$minute"
             binding.tietTodoTime.text = SpannableStringBuilder(timeSelected)
 
         }
         binding.tietTodoTime.setOnClickListener {
-            TimePickerDialog(mContext!!,timeListener,12,0,true).show()
+            TimePickerDialog(mContext!!,timeListener,myCalendar.get(Calendar.HOUR_OF_DAY),myCalendar.get(Calendar.MINUTE),true).show()
         }
 
         val dialog = AlertDialog.Builder(mContext!!)
@@ -260,11 +262,15 @@ class TaskFragment : Fragment() {
                 todo.category = category
                 todo.dateEpoch = myCalendar.timeInMillis
                 mainActivity!!.remote.updateTodo(todo, object : TodoCallback {
-                    override fun onResponse(todo: TodoEntity?, error: String?) {
+                    override fun onResponse(todoCurrent: TodoEntity?, error: String?) {
                         swipe_refresh.isRefreshing = false
                         if (error == null) {
                             Toaster(mContext!!).showToast(getString(R.string.update_todo_success_message))
-                            //adapter.notifyItemChanged(position)
+                            val intent = Intent(mainActivity!!,ReminderBroadcast::class.java)
+                            intent.action = Gson().toJson(todo)
+                            val pendingIntent = PendingIntent.getBroadcast(mainActivity!!,Random().nextInt(),intent,FLAG_CANCEL_CURRENT)
+                            val alarmManager = mainActivity!!.getSystemService(ALARM_SERVICE) as AlarmManager
+                            alarmManager.set(AlarmManager.RTC_WAKEUP,todo.dateEpoch,pendingIntent)
                         } else {
                             Toaster(mContext!!).showToast(error)
                         }
@@ -292,7 +298,7 @@ class TaskFragment : Fragment() {
 
         dialog.show()
 
-        Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate), dialog)
+        Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate, binding.tietTodoTime), dialog)
     }
 
 
@@ -306,7 +312,7 @@ class TaskFragment : Fragment() {
 
         if (adapter.getCategoryListArray().isEmpty()) {
             Toaster(mContext!!).showToast("Önce kategori eklemeniz gerekiyor.")
-            addCategory()
+            addCategory(true)
         } else {
             val binding = DataBindingUtil.inflate<PromptTodoBinding>(
                 layoutInflater, R.layout.prompt_todo, null, false
@@ -358,12 +364,13 @@ class TaskFragment : Fragment() {
             val timeListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
                 myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 myCalendar.set(Calendar.MINUTE, minute)
+                myCalendar.set(Calendar.SECOND, 0)
                 val timeSelected = "$hourOfDay:$minute"
                 binding.tietTodoTime.text = SpannableStringBuilder(timeSelected)
 
             }
             binding.tietTodoTime.setOnClickListener {
-               TimePickerDialog(mContext!!,timeListener,12,0,true).show()
+               TimePickerDialog(mContext!!,timeListener,myCalendar.get(Calendar.HOUR_OF_DAY),myCalendar.get(Calendar.MINUTE),true).show()
             }
 
 
@@ -391,14 +398,14 @@ class TaskFragment : Fragment() {
                     )
 
                     mainActivity!!.remote.addTodo(todo, object : TodoCallback {
-                        override fun onResponse(todo: TodoEntity?, error: String?) {
+                        override fun onResponse(todoCurrent: TodoEntity?, error: String?) {
                             swipe_refresh.isRefreshing = false
                             if (error == null) {
                                 Toaster(mContext!!).showToast(getString(R.string.add_todo_success_message))
 
                                 val intent = Intent(mainActivity!!,ReminderBroadcast::class.java)
-                                intent.putExtra("title",todo!!.todo)
-                                val pendingIntent = PendingIntent.getBroadcast(mainActivity,Random().nextInt(),intent,0)
+                                intent.action = Gson().toJson(todo)
+                                val pendingIntent = PendingIntent.getBroadcast(mainActivity,Random().nextInt(),intent,FLAG_CANCEL_CURRENT)
                                 val alarmManager = mainActivity!!.getSystemService(ALARM_SERVICE) as AlarmManager
                                 alarmManager.set(AlarmManager.RTC_WAKEUP,todo.dateEpoch,pendingIntent)
 
@@ -427,7 +434,7 @@ class TaskFragment : Fragment() {
 
             dialog.show()
 
-            Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate), dialog)
+            Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate, binding.tietTodoTime), dialog)
         }
 
     }
@@ -538,7 +545,7 @@ class TaskFragment : Fragment() {
     }
 
     // add new categoryItem with custom alert dialog
-    private fun addCategory() {
+    private fun addCategory(shouldAddTodo: Boolean = false) {
         if (mainActivity!!.currentUserEntity == null) {
             mainActivity!!.signIn(mainActivity!!); return
         }
@@ -576,7 +583,10 @@ class TaskFragment : Fragment() {
                         swipe_refresh.isRefreshing = false
                         if (error == null) {
                             Toaster(mContext!!).showToast(getString(R.string.add_category_success_message))
-
+                            if(shouldAddTodo) {
+                                adapter.listOfCategories.add(category!!)
+                                addTodo()
+                            }
                         } else {
                             Toaster(mContext!!).showToast(error)
                         }

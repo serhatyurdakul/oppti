@@ -1,5 +1,7 @@
 package com.serhatyurdakul.todo.app.data.local.todo
 
+import java.io.Serializable
+
 data class TodoEntity(
     var id: String,
     var todo: String,
@@ -9,4 +11,4 @@ data class TodoEntity(
     val user: String,
     var createdAt: String,
     var category: String
-)
+) : Serializable

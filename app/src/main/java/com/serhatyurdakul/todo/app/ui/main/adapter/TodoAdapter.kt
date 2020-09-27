@@ -24,7 +24,7 @@ class TodoAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var list = ArrayList<Any>()
     private var listOfTodos = ArrayList<TodoEntity>()
-    private var listOfCategories = ArrayList<CategoryEntity>()
+    var listOfCategories = ArrayList<CategoryEntity>()
     private var listener: TodoClickEvent? = null
     private var listenerCategory: CategoryClickEvent? = null
 
@@ -79,8 +79,11 @@ class TodoAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         }
         if(count>0)
+        {
             strings[count]="Kategori Ekle "
         return strings
+        }
+        return Array<String>(0)  { "it = $it" }
     }
 
     private fun organizeList() {

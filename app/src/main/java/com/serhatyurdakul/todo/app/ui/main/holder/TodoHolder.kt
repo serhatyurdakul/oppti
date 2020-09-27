@@ -19,9 +19,12 @@ class TodoHolder(private val binding: ItemTodoBinding) : RecyclerView.ViewHolder
         var tempCalendar = Calendar.getInstance()
         tempCalendar.timeInMillis=todo.dateEpoch
 
+        if(todo.dateEpoch>System.currentTimeMillis())
+            binding.btnWarning.visibility= View.INVISIBLE
+        else
+            binding.btnWarning.visibility= View.VISIBLE
         binding.tvTodo.text = todo.todo
-        binding.tvDate.text = todo.date +" "+tempCalendar.get(Calendar.HOUR_OF_DAY)+":"+tempCalendar.get(
-            Calendar.MINUTE)
+        binding.tvDate.text = todo.date +String.format(" %02d:%02d", tempCalendar.get(Calendar.HOUR_OF_DAY),tempCalendar.get(Calendar.MINUTE))
         // if the task is complete make the text gray, change the icon, and hide the edit button
         // else make it black, show different icon, and show the edit icon
         if (todo.completed) {

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         package="com.serhatyurdakul.todo">
-
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
     <application
             android:name=".TodoApp"
             android:allowBackup="true"
@@ -15,7 +15,8 @@
 
         <activity
                 android:name=".app.ui.main.MainActivity"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

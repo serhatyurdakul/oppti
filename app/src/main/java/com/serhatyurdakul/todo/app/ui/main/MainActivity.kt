@@ -17,6 +17,7 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.appbar.AppBarLayout
 import com.serhatyurdakul.todo.R
 import com.serhatyurdakul.todo.app.data.local.Const
+import com.serhatyurdakul.todo.app.data.local.todo.TodoEntity
 import com.serhatyurdakul.todo.app.data.local.user.UserEntity
 import com.serhatyurdakul.todo.app.ui.helper.AuthHelper
 import com.serhatyurdakul.todo.util.helper.FormatUtil
@@ -64,6 +65,20 @@ class MainActivity : AppCompatActivity(), AuthHelper {
         }
 
         createNotificationChannel();
+
+       var todoFromNotification = intent?.getSerializableExtra("todo") as TodoEntity?
+        if (todoFromNotification != null) {
+            showDetails(todoFromNotification)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        var todoFromNotification = intent?.getSerializableExtra("todo") as TodoEntity?
+        if (todoFromNotification != null) {
+            showDetails(todoFromNotification)
+        }
+
     }
 
     private fun initView() {
@@ -230,6 +245,17 @@ class MainActivity : AppCompatActivity(), AuthHelper {
         }
 
 
+    }
+
+    //show todoItem's details
+    private fun showDetails(todo: TodoEntity) {
+        val details = "Title: ${todo.todo}\nDate: ${todo.date}"
+        AlertDialog.Builder(this)
+            .setTitle(R.string.label_details)
+            .setMessage(details)
+            .setNegativeButton(R.string.label_cancel) { _, _ -> }
+            .create()
+            .show()
     }
 
 }

@@ -8,9 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
@@ -18,6 +16,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.serhatyurdakul.todo.R
 import com.serhatyurdakul.todo.app.data.local.category.CategoryEntity
 import com.serhatyurdakul.todo.app.data.local.todo.TodoEntity
@@ -33,7 +32,6 @@ import com.serhatyurdakul.todo.util.lib.firebase.callback.CategoryCallback
 import com.serhatyurdakul.todo.util.lib.firebase.callback.TodoCallback
 import com.serhatyurdakul.todo.util.lib.firebase.callback.TodoListCallback
 import dev.sasikanth.colorsheet.ColorSheet
-import kotlinx.android.synthetic.main.fragment_task.*
 import java.util.*
 
 
@@ -81,7 +79,13 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
     override fun show(manager: FragmentManager, tag: String?) {
         if(todoAdapter.getToDoCount()==0)
-            addTodo()
+        {
+            if(todoAdapter.getCategoryListArray().isEmpty())
+                addCategory()
+            else
+                addTodo()
+
+        }
         else
             super.show(manager, tag)
     }
@@ -143,12 +147,13 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         val timeListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
             myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             myCalendar.set(Calendar.MINUTE, minute)
+            myCalendar.set(Calendar.SECOND, 0)
             val timeSelected = "$hourOfDay:$minute"
             binding.tietTodoTime.text = SpannableStringBuilder(timeSelected)
 
         }
         binding.tietTodoTime.setOnClickListener {
-            TimePickerDialog(mainActivity,timeListener,12,0,true).show()
+            TimePickerDialog(mainActivity,timeListener,myCalendar.get(Calendar.HOUR_OF_DAY),myCalendar.get(Calendar.MINUTE),true).show()
         }
 
             val dialog = AlertDialog.Builder(mainActivity)
@@ -173,15 +178,18 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                     )
 
                     mainActivity.remote.addTodo(todo, object : TodoCallback {
-                        override fun onResponse(todo: TodoEntity?, error: String?) {
+                        override fun onResponse(todoCurrent: TodoEntity?, error: String?) {
 
                             if (error == null) {
                                 Toaster(mainActivity).showToast(mainActivity.getString(R.string.add_todo_success_message))
                                 val intent = Intent(mainActivity,ReminderBroadcast::class.java)
-                                intent.putExtra("title",todo!!.todo)
-                                val pendingIntent = PendingIntent.getBroadcast(mainActivity,Random().nextInt(),intent,0)
+                                intent.action = Gson().toJson(todo)
+                                val pendingIntent = PendingIntent.getBroadcast(mainActivity,Random().nextInt(),intent,
+                                    PendingIntent.FLAG_CANCEL_CURRENT
+                                )
                                 val alarmManager = mainActivity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                                 alarmManager.set(AlarmManager.RTC_WAKEUP,todo.dateEpoch,pendingIntent)
+
 
                             } else {
                                 Toaster(mainActivity).showToast(error)
@@ -208,7 +216,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         }
             dialog.show()
 
-            Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate), dialog)
+            Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate , binding.tietTodoTime), dialog)
 
 
     }
@@ -346,19 +354,20 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
         }
         var tempCalendar = Calendar.getInstance()
         tempCalendar.timeInMillis=todo.dateEpoch
-        binding.tietTodoTime.text = SpannableStringBuilder(""+tempCalendar.get(Calendar.HOUR_OF_DAY)+":"+tempCalendar.get(Calendar.MINUTE))
+        binding.tietTodoTime.text = SpannableStringBuilder(String.format("%02d:%02d", tempCalendar.get(Calendar.HOUR_OF_DAY),tempCalendar.get(Calendar.MINUTE)))
 
 
 
         val timeListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
             myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             myCalendar.set(Calendar.MINUTE, minute)
+            myCalendar.set(Calendar.SECOND, 0)
             val timeSelected = "$hourOfDay:$minute"
             binding.tietTodoTime.text = SpannableStringBuilder(timeSelected)
 
         }
         binding.tietTodoTime.setOnClickListener {
-            TimePickerDialog(mainActivity,timeListener,12,0,true).show()
+            TimePickerDialog(mainActivity,timeListener,myCalendar.get(Calendar.HOUR_OF_DAY),myCalendar.get(Calendar.MINUTE),true).show()
         }
 
         val dialog = AlertDialog.Builder(mainActivity)
@@ -377,11 +386,17 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                 todo.category = category
                 todo.dateEpoch = myCalendar.timeInMillis
                 mainActivity.remote.updateTodo(todo, object : TodoCallback {
-                    override fun onResponse(todo: TodoEntity?, error: String?) {
+                    override fun onResponse(todoCurrent: TodoEntity?, error: String?) {
 
                         if (error == null) {
                             Toaster(mainActivity).showToast(mainActivity.getString(R.string.update_todo_success_message))
-                            //adapter.notifyItemChanged(position)
+                            val intent = Intent(mainActivity,ReminderBroadcast::class.java)
+                            intent.action = Gson().toJson(todo)
+                            val pendingIntent = PendingIntent.getBroadcast(mainActivity,Random().nextInt(),intent,
+                                PendingIntent.FLAG_CANCEL_CURRENT
+                            )
+                            val alarmManager = mainActivity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                            alarmManager.set(AlarmManager.RTC_WAKEUP,todo.dateEpoch,pendingIntent)
                         } else {
                             Toaster(mainActivity).showToast(error)
                         }
@@ -408,7 +423,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
         dialog.show()
 
-        Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate), dialog)
+        Validator.forceValidation(arrayOf(binding.tietTodoTitle, binding.tietTodoDate , binding.tietTodoTime), dialog)
     }
 
     // add new categoryItem with custom alert dialog
@@ -450,6 +465,10 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
 
                         if (error == null) {
                             Toaster(mainActivity).showToast(mainActivity.getString(R.string.add_category_success_message))
+                        /////////////
+                            todoAdapter.listOfCategories.add(category!!)
+                              addTodo()
+
 
                         } else {
                             Toaster(mainActivity).showToast(error)
@@ -457,7 +476,7 @@ class TodoDialogFragment(private var todoAdapter: TodoAdapter, private  var titl
                     }
                 })
             }
-            .setNegativeButton(R.string.label_cancel) { _, _ -> }
+            .setNegativeButton(R.string.label_cancel) { _, _ -> addTodo()}
             .create()
 
         dialog.setOnShowListener {
